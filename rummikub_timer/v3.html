@@ -2,10 +2,14 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="보드게임타이머">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <title>보드게임 타이머</title>
     <style>
         :root { --bg-green: #27ae60; --bg-orange: #f39c12; --bg-red: #e74c3c; --bg-dark: #2c3e50; }
@@ -92,7 +96,7 @@
         </div>
         <div class="game-controls">
             <button class="btn-control" onclick="toggleFullscreen(event)">전체화면</button>
-            <button class="btn-control" style="background:#f1c40f; color:#333; border:none;" onclick="showPlayerWinModal(event)">나 탈출!</button>
+            <button class="btn-control" style="background:#f1c40f; color:#333; border:none;" onclick="showPlayerWinModal(event)">탈출!</button>
             <button class="btn-control" onclick="showEndGameModal(event)">종료</button>
         </div>
     </div>
@@ -118,7 +122,6 @@
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
-            toast.innerText = msg;
             toast.style.opacity = '1';
             setTimeout(() => { toast.style.opacity = '0'; }, 2000);
         }
@@ -153,9 +156,9 @@
         function toggleFullscreen(e) {
             if(e) e.stopPropagation();
             const doc = document.documentElement;
-            const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 
-            if (isiOS && window.navigator.standalone) { 
+            if (isStandalone) { 
                 showToast("이미 전체화면 모드입니다."); 
                 return;
             }
@@ -261,28 +264,21 @@
         function showEndGameModal(e) { e.stopPropagation(); showModal("게임을 종료하시겠습니까?", showResults); }
         
         function showResults() {
+            const p = players[currentPlayerIndex];
+            if (p && !p.isOut) p.totalUsedTime += Math.round((Date.now() - turnStartTime) / 1000);
             clearInterval(timerInterval);
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
             const tbody = document.getElementById('result-body');
-            
-            // 정렬 로직 수정: 
-            // 1. 탈출자 우선 (winOrder 순)
-            // 2. 남은 사람 (사용 시간 적은 순)
             const sorted = [...players].sort((a,b) => {
                 if (a.isOut && b.isOut) return a.winOrder - b.winOrder;
                 if (a.isOut) return -1;
                 if (b.isOut) return 1;
                 return a.totalUsedTime - b.totalUsedTime;
             });
-            
             tbody.innerHTML = sorted.map((p) => {
                 let resultText = p.isOut ? `<b>${p.winOrder}등</b>` : "종료";
-                return `<tr>
-                    <td>${p.name}</td>
-                    <td>${resultText}</td>
-                    <td>${Math.floor(p.totalUsedTime/60)}분 ${p.totalUsedTime%60}초</td>
-                </tr>`;
+                return `<tr><td>${p.name}</td><td>${resultText}</td><td>${Math.floor(p.totalUsedTime/60)}분 ${p.totalUsedTime%60}초</td></tr>`;
             }).join('');
         }
         generateNameInputs();
