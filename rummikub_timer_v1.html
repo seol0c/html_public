@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>보드게임 타이머</title>
+    <style>
+        :root { --bg-green: #27ae60; --bg-orange: #f39c12; --bg-red: #e74c3c; --bg-dark: #2c3e50; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; font-family: sans-serif; background: var(--bg-dark); color: white; overflow: hidden; touch-action: manipulation; }
+        .screen { width: 100vw; height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; box-sizing: border-box; }
+        .hidden { display: none !important; }
+
+        /* 설정 화면 */
+        #setup-screen { background: #34495e; z-index: 10; padding: 20px; }
+        .setup-card { background: white; color: #333; padding: 25px; border-radius: 20px; width: 100%; max-width: 320px; text-align: center; }
+        select, input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; box-sizing: border-box; outline: none; -webkit-appearance: none; }
+        .btn-start { background: var(--bg-green); color: white; border: none; padding: 18px; width: 100%; border-radius: 10px; font-size: 1.3rem; cursor: pointer; font-weight: bold; margin-top: 15px; }
+
+        /* 게임 화면 */
+        #game-screen { background-color: var(--bg-green); cursor: pointer; text-align: center; z-index: 5; }
+        #player-name-display { font-size: 1.8rem; font-weight: bold; background: rgba(0,0,0,0.2); padding: 5px 25px; border-radius: 50px; margin-bottom: 10px; }
+        #time-display { font-size: 32vw; font-weight: 900; line-height: 1; margin: 10px 0; }
+        .game-controls { position: absolute; bottom: 60px; display: flex; gap: 10px; width: 95%; justify-content: center; }
+        .btn-control { padding: 15px 10px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1rem; border: 2px solid white; color: white; background: rgba(255,255,255,0.2); flex: 1; max-width: 140px; }
+        .btn-out { background: #f1c40f; color: #333; border: none; }
+
+        /* 결과 화면 */
+        #result-screen { background: #2c3e50; z-index: 15; padding: 15px; }
+        .table-wrapper { width: 100%; max-width: 400px; background: white; border-radius: 15px; overflow: hidden; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; color: #333; }
+        th, td { padding: 12px 5px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.85rem; }
+        .btn-restart { background: var(--bg-green); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; }
+
+        /* [추가] 커스텀 모달 팝업 스타일 */
+        #custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .modal-body { background: white; color: #333; padding: 25px; border-radius: 20px; width: 80%; max-width: 300px; text-align: center; }
+        .modal-text { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; line-height: 1.4; }
+        .modal-btns { display: flex; gap: 10px; }
+        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+        #btn-confirm { background: var(--bg-green); color: white; }
+        #btn-cancel { background: #eee; color: #777; }
+
+        .blink { animation: blinker 0.8s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0.3; } }
+    </style>
+</head>
+<body>
+
+    <div id="custom-modal" class="hidden">
+        <div class="modal-body">
+            <div id="modal-msg" class="modal-text">메시지</div>
+            <div class="modal-btns">
+                <button id="btn-cancel" class="modal-btn">취소</button>
+                <button id="btn-confirm" class="modal-btn">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="setup-screen" class="screen">
+        <div class="setup-card">
+            <h2 style="margin: 0 0 15px 0;">🎲 루미큐브 타이머</h2>
+            <div id="name-inputs" style="margin: 10px 0;"></div>
+            <label>인원/시간 설정</label>
+            <div style="display: flex; gap: 5px;">
+                <select id="player-count" onchange="generateNameInputs()" style="flex:1">
+                    <option value="2">2명</option><option value="3">3명</option>
+                    <option value="4" selected>4명</option><option value="5">5명</option>
+                    <option value="6">6명</option>
+                </select>
+                <select id="time-limit" style="flex:1">
+                    <option value="30">30초</option>
+                    <option value="60" selected>1분</option>
+                    <option value="120">2분</option>
+                </select>
+            </div>
+            <button class="btn-start" onclick="startGame()">게임 시작</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen hidden" onclick="nextTurn()">
+        <div id="player-name-display">이름</div>
+        <div id="time-display">60</div>
+        <div style="font-weight: bold; opacity: 0.8;">터치하여 다음 턴</div>
+        <div class="game-controls">
+            <button class="btn-control btn-out" onclick="showPlayerWinModal(event)">나 탈출!</button>
+            <button class="btn-control" onclick="showEndGameModal(event)">게임 종료</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen hidden">
+        <h2>📊 최종 기록</h2>
+        <div class="table-wrapper">
+            <table id="result-table">
+                <thead>
+                    <tr><th>순위</th><th>이름</th><th>상태</th><th>시간</th></tr>
+                </thead>
+                <tbody id="result-body"></tbody>
+            </table>
+        </div>
+        <button class="btn-restart" onclick="backToSetup()">새 게임 하기</button>
+    </div>
+
+    <script>
+        let players = [];
+        let currentPlayerIndex = 0;
+        let initialTime = 60;
+        let timeLeft = 60;
+        let timerInterval = null;
+        let turnStartTime = 0;
+        let audioCtx = null;
+        let modalCallback = null;
+
+        function playDing(freq, dur) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        }
+
+        // 커스텀 모달 제어 함수
+        function showModal(msg, callback) {
+            document.getElementById('modal-msg').innerText = msg;
+            document.getElementById('custom-modal').classList.remove('hidden');
+            modalCallback = callback;
+        }
+
+        document.getElementById('btn-confirm').onclick = () => {
+            document.getElementById('custom-modal').classList.add('hidden');
+            if(modalCallback) modalCallback();
+        };
+
+        document.getElementById('btn-cancel').onclick = () => {
+            document.getElementById('custom-modal').classList.add('hidden');
+        };
+
+        function generateNameInputs() {
+            const count = document.getElementById('player-count').value;
+            const container = document.getElementById('name-inputs');
+            container.innerHTML = '';
+            const savedNames = JSON.parse(sessionStorage.getItem('rummi_session_names')) || {};
+            for(let i=1; i<=count; i++) {
+                const savedName = savedNames[`p${i}`] || ""; 
+                container.innerHTML += `<input type="text" id="p${i}" value="${savedName}" placeholder="플레이어 ${i} 이름" onfocus="this.select()">`;
+            }
+        }
+
+        function startGame() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            // 전체 화면 요청 (지원 기기만)
+            const el = document.documentElement;
+            if (el.requestFullscreen) el.requestFullscreen();
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+
+            const count = document.getElementById('player-count').value;
+            const sessionNames = {};
+            players = [];
+            for(let i=1; i<=count; i++) {
+                let nameValue = document.getElementById(`p${i}`).value || `플레이어 ${i}`;
+                players.push({ name: nameValue, totalUsedTime: 0, isOut: false, winOrder: 0 });
+                sessionNames[`p${i}`] = nameValue;
+            }
+            sessionStorage.setItem('rummi_session_names', JSON.stringify(sessionNames));
+            initialTime = parseInt(document.getElementById('time-limit').value);
+            
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            currentPlayerIndex = 0;
+            startTurn();
+        }
+
+        function startTurn() {
+            const activePlayers = players.filter(p => !p.isOut);
+            if (activePlayers.length === 0) { showResults(); return; }
+            timeLeft = initialTime;
+            turnStartTime = Date.now();
+            updateUI();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateUI();
+                if(timeLeft <= 0) { clearInterval(timerInterval); playDing(440, 0.5); }
+            }, 1000);
+        }
+
+        function nextTurn() {
+            const p = players[currentPlayerIndex];
+            p.totalUsedTime += Math.round((Date.now() - turnStartTime) / 1000);
+            playDing(1000, 0.2); 
+            if (navigator.vibrate) navigator.vibrate(40);
+            
+            document.getElementById('game-screen').classList.remove('blink');
+            let attempts = 0;
+            do {
+                currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+                attempts++;
+            } while (players[currentPlayerIndex].isOut && attempts < players.length);
+            
+            if (attempts >= players.length) showResults();
+            else startTurn();
+        }
+
+        // 나 탈출 버튼 클릭 시 모달 띄우기
+        function showPlayerWinModal(e) {
+            e.stopPropagation();
+            showModal(`${players[currentPlayerIndex].name}님, 탈출하셨나요?`, () => {
+                playDing(600, 0.1); playDing(1000, 0.3);
+                players[currentPlayerIndex].isOut = true;
+                players[currentPlayerIndex].totalUsedTime += Math.round((Date.now() - turnStartTime) / 1000);
+                players[currentPlayerIndex].winOrder = players.filter(pl => pl.isOut).length;
+                nextTurn();
+            });
+        }
+
+        // 게임 종료 버튼 클릭 시 모달 띄우기
+        function showEndGameModal(e) {
+            e.stopPropagation();
+            showModal("게임을 종료하고 결과를 볼까요?", showResults);
+        }
+
+        function updateUI() {
+            const display = document.getElementById('time-display');
+            const screen = document.getElementById('game-screen');
+            const nameDisplay = document.getElementById('player-name-display');
+            display.innerText = timeLeft < 0 ? 0 : timeLeft;
+            nameDisplay.innerText = players[currentPlayerIndex].name;
+            const ratio = timeLeft / initialTime;
+            if(ratio > 0.5) screen.style.backgroundColor = 'var(--bg-green)';
+            else if(ratio > 0.2) screen.style.backgroundColor = 'var(--bg-orange)';
+            else {
+                screen.style.backgroundColor = 'var(--bg-red)';
+                if(timeLeft <= 5) screen.classList.add('blink');
+            }
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            const tbody = document.getElementById('result-body');
+            const displayList = [...players].sort((a, b) => {
+                if (a.isOut && b.isOut) return a.winOrder - b.winOrder;
+                if (a.isOut) return -1;
+                if (b.isOut) return 1;
+                return b.totalUsedTime - a.totalUsedTime;
+            });
+            tbody.innerHTML = displayList.map((p, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${p.name}</td>
+                    <td>${p.isOut ? p.winOrder + '위' : '종료'}</td>
+                    <td>${Math.floor(p.totalUsedTime / 60)}분 ${p.totalUsedTime % 60}초</td>
+                </tr>
+            `).join('');
+        }
+
+        function backToSetup() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+            generateNameInputs();
+        }
+        generateNameInputs();
+    </script>
+</body>
+</html>
