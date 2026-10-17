@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>seolcount</title>
+<!-- 웹판(브라우저·아이폰)용. 앱(file:///android_asset)에서는 이 파일들이 없어 무시된다 -->
+<meta name="theme-color" content="#1e242a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="seolcount">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; }
+  html, body { width:100%; height:100%; overflow:hidden; background:#111;
+               font-family:'Segoe UI','Malgun Gothic',sans-serif; touch-action:none; }
+  #app { display:flex; flex-direction:column; width:100%; height:100%; }
+
+  /* ── 상단바 ── */
+  #topbar {
+    display:flex; align-items:center; gap:7px; position:relative;
+    height:56px; background:#1e242a; color:#fff; padding:0 9px; flex-shrink:0; z-index:10;
+    font-size:15px;
+    /* 아이폰 가로 화면은 노치가 왼쪽이나 오른쪽에 온다. 버튼이 그 밑에 숨지 않게 */
+    padding-left:calc(9px + env(safe-area-inset-left)); padding-right:calc(9px + env(safe-area-inset-right));
+  }
+  #topbar button {
+    height:42px; padding:0 16px; border:none; border-radius:8px;
+    background:#2c343b; color:#fff; font-size:15px; font-weight:700;
+    font-family:inherit; cursor:pointer; flex-shrink:0; white-space:nowrap;
+  }
+  #topbar button:active { background:#3e4952; }
+  #btnStop { background:#7d3a34; }
+  .sp { flex:1; }
+  #place { position:absolute; left:50%; transform:translateX(-50%);
+           font-size:15px; font-weight:700; color:#c3d2dc; white-space:nowrap;
+           max-width:210px; overflow:hidden; text-overflow:ellipsis; text-align:center; }
+  #clock { font-size:15px; font-weight:700; color:#9fb2c2; font-variant-numeric:tabular-nums;
+           min-width:74px; text-align:right; flex-shrink:0; }
+
+  /* ── 계수 영역 ── */
+  #zones { display:flex; flex:1; position:relative; }
+  .zone { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+          cursor:pointer; }
+  #zoneOut { background:#9b5650; }
+  #zoneIn  { background:#4a7389; }
+  .zone.flash-out { background:#83463f; }
+  .zone.flash-in  { background:#3d6073; }
+  .zone .label { font-size:5vmin; font-weight:800; color:rgba(0,0,0,.5); }
+  .zone .count { font-size:19vmin; font-weight:900; color:#fff; line-height:1;
+                 font-variant-numeric:tabular-nums; margin-top:.6vmin; }
+  .zone .minus {
+    margin-top:7vmin; padding:0 6vmin; height:9vmin; min-height:50px;
+    border:none; border-radius:10px; font-size:4.2vmin; font-weight:800;
+    color:#fff; font-family:inherit; background:rgba(0,0,0,.32);
+    cursor:pointer; white-space:nowrap;
+  }
+  .zone .minus:active { background:rgba(0,0,0,.55); }
+
+  /* ── 한가운데 : 현재인원 / 수용인원 ── */
+  #capBox {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:6;
+    background:#2b3138; border:2px solid #454f58; border-radius:14px;
+    padding:2.4vmin 5vmin; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,.45);
+  }
+  #capNum { font-size:9.5vmin; font-weight:900; color:#fff; line-height:1.1;
+            font-variant-numeric:tabular-nums; white-space:nowrap; }
+  #capNum .max { color:#9fb2c2; }
+  #capSub { font-size:2.8vmin; font-weight:700; color:#9fb2c2; margin-top:.5vmin; white-space:nowrap; }
+  #capBox.warn { border-color:#d6b25e; }
+  #capBox.warn #capNum .cur { color:#d6b25e; }
+  #capBox.full { background:#7d3a34; border-color:#c07a72; animation:pulse 1s infinite; }
+  #capBox.full #capNum, #capBox.full #capNum .max { color:#fff; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.55;} }
+
+  /* 시작 전 덮개 */
+  #cover { position:absolute; inset:0; background:rgba(17,17,17,.86); z-index:20;
+           display:flex; align-items:center; justify-content:center; }
+  #cover.hide { display:none; }
+  #cover button {
+    font-size:5vmin; font-weight:800; color:#fff; background:#4a7389;
+    border:none; border-radius:14px; padding:3vmin 9vmin; font-family:inherit; cursor:pointer;
+  }
+  #cover button:active { background:#3d6073; }
+  #cover { flex-direction:column; gap:3vmin; }
+  #cover .hint { font-size:2.6vmin; color:#9fb2c2; text-align:center; line-height:1.5; padding:0 6vmin; }
+  #cover .hint.hide { display:none; }
+
+  /* 웹판: 세로로 들면 가로로 돌리라고만 한다 (앱은 가로 고정이라 안 뜸) */
+  #rotate { position:fixed; inset:0; background:#111; color:#c3d2dc; z-index:300; display:none;
+            align-items:center; justify-content:center; text-align:center; font-size:5.5vmin; font-weight:700;
+            line-height:1.6; }
+  #rotate.show { display:flex; }
+
+  /* ── 창 : 키보드가 뜨면 보이는 만큼만 쓰고 위로 붙는다 ── */
+  .modal { position:fixed; left:0; top:0; width:100%; height:var(--vvh, 100%);
+           background:rgba(0,0,0,.72); display:none;
+           align-items:center; justify-content:center; padding:8px; z-index:100; }
+  .modal.show { display:flex; }
+  .modal.kb { align-items:flex-start; }
+  #mDlg { z-index:200; }
+  .box { background:#232a30; color:#fff; border-radius:14px; padding:16px 18px;
+         max-height:100%; display:flex; flex-direction:column; gap:12px; font-size:16px; }
+  .box * { font-size:16px; }
+  #mSet  .box { width:min(92vw,430px); }
+  #mHist .box { width:min(94vw,700px); }
+  #mDlg  .box { width:auto; min-width:230px; max-width:min(88vw,470px); }
+  #dlgMsg { line-height:1.6; white-space:pre-line; overflow-y:auto; min-height:0; text-align:center; }
+  #dlgMsg.left { text-align:left; }
+  #dlgMsg.key  { font-family:'Consolas',monospace; word-break:break-all; white-space:normal;
+                 -webkit-user-select:text; user-select:text; }
+
+  .hd { display:flex; align-items:center; flex-shrink:0; }
+  .hd .ttl { font-weight:700; color:#dfeaf3; }
+  .hd .x { margin-left:auto; background:#333c44; color:#cdd9e4; border:none; border-radius:8px;
+           padding:8px 15px; font-family:inherit; font-weight:700; cursor:pointer; }
+  .fld { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .fld span { color:#9fb2c2; font-weight:700; width:76px; flex-shrink:0; }
+  .box input[type=text], .box input[type=number] {
+    flex:1; padding:10px 12px; border-radius:8px; border:2px solid #3e4952;
+    background:#161b20; color:#fff; font-family:inherit; min-width:0;
+    -webkit-user-select:text; user-select:text; }
+  .fld .side { flex-shrink:0; width:44px; padding:10px 0; border:none; border-radius:8px;
+               background:#333c44; color:#cdd9e4; font-weight:700; font-family:inherit;
+               cursor:pointer; }
+  .row { display:flex; gap:9px; flex-shrink:0; }
+  .row button { flex:1; font-weight:700; padding:12px 14px; border:none; border-radius:9px;
+                font-family:inherit; cursor:pointer; white-space:nowrap; }
+  .b-pri { background:#4a7389; color:#fff; }
+  .b-sec { background:#333c44; color:#cdd9e4; }
+  .b-dan { background:#7d3a34; color:#e8cbc7; }
+  .scroll { overflow-y:auto; display:flex; flex-direction:column; gap:12px; min-height:0;
+            padding:2px; }
+
+  /* ── 기록 ── */
+  .rec { display:flex; align-items:center; gap:9px; background:#1b2126;
+         border-radius:9px; padding:11px 12px; font-variant-numeric:tabular-nums; }
+  .rec.live { border-left:4px solid #bf8a84; }
+  .rec input[type=checkbox] { width:22px; height:22px; flex:0 0 22px; margin:0; accent-color:#4a7389; }
+  .rec .body { flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; }
+  .rec .l1, .rec .l2 { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rec .l1 { color:#dfeaf3; font-weight:700; }
+  .rec .l1 .dt { color:#9fb2c2; font-weight:400; }
+  .rec .l1 .ok { color:#7fa885; font-weight:700; }
+  .rec .l2 { color:#9fb2c2; padding-left:2px; }
+  .rec .l2 b { color:#fff; }
+  .rec .l2 b.i { color:#8fb3c4; }
+  .rec .l2 b.o { color:#bf8a84; }
+  .rec .a { flex-shrink:0; white-space:nowrap; background:#333c44; color:#cdd9e4;
+            border:none; border-radius:8px; padding:11px 13px; font-family:inherit;
+            font-weight:700; cursor:pointer; }
+  .empty { color:#7d8b97; text-align:center; padding:24px 0; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <button id="btnSet">설정</button>
+    <button id="btnHist">기록</button>
+    <div id="place"></div>
+    <div class="sp"></div>
+    <button id="btnCancel">기록취소</button>
+    <button id="btnStop">정지 및 저장</button>
+    <div id="clock">00:00:00</div>
+  </div>
+
+  <div id="zones">
+    <div class="zone" id="zoneOut">
+      <div class="label">퇴장</div>
+      <div class="count" id="cntOut">0</div>
+      <button class="minus" id="minusOut">-1</button>
+    </div>
+    <div class="zone" id="zoneIn">
+      <div class="label">입장</div>
+      <div class="count" id="cntIn">0</div>
+      <button class="minus" id="minusIn">-1</button>
+    </div>
+
+    <div id="capBox">
+      <div id="capNum"><span class="cur">0</span><span class="max"> / 0</span></div>
+      <div id="capSub">현재 인원 / 수용 인원</div>
+    </div>
+
+    <div id="cover">
+      <button id="btnStart">기록 시작</button>
+      <div class="hint hide" id="homeHint"></div>
+    </div>
+  </div>
+</div>
+<div id="rotate">폰을 가로로<br>돌리십시오</div>
+
+<!-- 설정 -->
+<div class="modal" id="mSet">
+  <div class="box">
+    <div class="hd"><div class="ttl">설정</div><button class="x" id="setX">닫기</button></div>
+    <div class="scroll">
+      <div class="fld"><span>장소명</span><input id="fPlace" type="text"></div>
+      <div class="fld"><span>수용인원</span><input id="fMax" type="number" inputmode="numeric" min="0"></div>
+      <div class="fld"><span>기록자명</span><input id="fWriter" type="text"></div>
+      <div class="fld">
+        <span>전송주소</span>
+        <input id="fUrl" type="text" placeholder="안 쓰면 비워두십시오">
+        <button class="side" id="urlHelp">?</button>
+      </div>
+    </div>
+    <div class="row"><button class="b-pri" id="setSave">저장</button></div>
+  </div>
+</div>
+
+<!-- 기록 -->
+<div class="modal" id="mHist">
+  <div class="box">
+    <div class="hd"><div class="ttl">기록</div><button class="x" id="histX">닫기</button></div>
+    <div class="scroll"><div id="histList"></div></div>
+    <div class="row">
+      <button class="b-sec" id="histShareAll">전체 공유</button>
+      <button class="b-dan" id="histDelSel">선택 삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- 알림 / 확인 -->
+<div class="modal" id="mDlg">
+  <div class="box">
+    <div id="dlgMsg"></div>
+    <div class="row">
+      <button class="b-sec" id="dlgExtra"></button>
+      <button class="b-sec" id="dlgNo">취소</button>
+      <button class="b-pri" id="dlgYes">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+const LS = 'seolcount_v8';
+const LIVE_SEC = 60;
+
+let st = { place:'', writer:'', maxCap:0, url:'', dev:'', n:0, seq:{}, recs:[] };
+try { const o = JSON.parse(localStorage.getItem(LS)); if (o && Array.isArray(o.recs)) st = Object.assign(st, o); } catch (e) {}
+if (!st.dev) st.dev = 'd' + Math.random().toString(36).slice(2, 8);
+if (!st.seq) st.seq = {};
+
+const $ = i => document.getElementById(i);
+const save = () => { try { localStorage.setItem(LS, JSON.stringify(st)); } catch (e) {} };
+const cur = () => { const r = st.recs[st.recs.length - 1]; return (r && !r.end) ? r : null; };
+const inside = () => { const r = cur(); return r ? r.in - r.out : 0; };
+
+const p2 = n => String(n).padStart(2, '0');
+const hm  = t => { const d = new Date(t); return p2(d.getHours()) + ':' + p2(d.getMinutes()); };
+const ymd = t => { const d = new Date(t); return d.getFullYear() + '.' + p2(d.getMonth()+1) + '.' + p2(d.getDate()) + '.'; };
+function stamp(t) {
+  const d = new Date(t);
+  return d.getFullYear() + '-' + p2(d.getMonth()+1) + '-' + p2(d.getDate()) +
+         ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds());
+}
+function dur(ms) { const s = Math.max(0, Math.floor(ms/1000));
+  return p2(Math.floor(s/3600)) + ':' + p2(Math.floor(s%3600/60)) + ':' + p2(s%60); }
+const elapsed = r => dur((r.end || Date.now()) - r.start);
+
+/* 기록 번호는 장소마다 따로, 한 번 준 번호는 다시 쓰지 않는다.
+   (지워도 남은 것들의 번호가 밀리지 않아 시트와 어긋나지 않는다) */
+function nextNo(place) {
+  const p = place || '기록';
+  st.seq[p] = (st.seq[p] || 0) + 1;
+  return st.seq[p];
+}
+const recName = i => { const r = st.recs[i]; return (r.place || '기록') + r.no; };
+const recKey  = i => st.dev + '|' + st.recs[i].id;
+
+/* 예전 판에서 넘어온 기록 손보기: 번호 붙이기 + 겹치는 id 떼어놓기 */
+(function migrate() {
+  let changed = false;
+  const seen = {};
+  st.recs.forEach(r => {
+    if (typeof r.no !== 'number') { r.no = nextNo(r.place); changed = true; }
+    else { const p = r.place || '기록'; if ((st.seq[p] || 0) < r.no) { st.seq[p] = r.no; changed = true; } }
+    if (seen[r.id]) { st.n = (st.n || 0) + 1; r.id = r.id + '-' + st.n.toString(36); changed = true; }
+    seen[r.id] = 1;
+  });
+  if (changed) save();
+})();
+
+/* ── 앱 자체 알림창 ── */
+const show = i => $(i).classList.add('show');
+const hide = i => $(i).classList.remove('show');
+let dlgCb = null, dlgExtraCb = null;
+
+function dialog(msg, o) {
+  o = o || {};
+  $('dlgMsg').textContent = msg;
+  $('dlgMsg').className = (o.left ? 'left' : '') + (o.key ? ' key' : '');
+  $('dlgNo').style.display = o.cancel ? '' : 'none';
+  const ex = $('dlgExtra');
+  if (o.extra) { ex.style.display = ''; ex.textContent = o.extra; dlgExtraCb = o.onExtra || null; }
+  else { ex.style.display = 'none'; dlgExtraCb = null; }
+  dlgCb = o.onOk || null;
+  show('mDlg');
+}
+const say = m => dialog(m, {});
+const ask = (m, cb) => dialog(m, { cancel:true, onOk:cb });
+
+$('dlgYes').addEventListener('click', () => { hide('mDlg'); const f = dlgCb; dlgCb = null; if (f) f(); });
+$('dlgNo').addEventListener('click',  () => { hide('mDlg'); dlgCb = null; });
+$('dlgExtra').addEventListener('click', () => { if (dlgExtraCb) dlgExtraCb(); });
+
+/* ── 키보드가 올라오면 입력칸을 보이는 곳으로 ── */
+const vv = window.visualViewport;
+function fitKb() {
+  const h = vv ? vv.height : window.innerHeight;
+  document.documentElement.style.setProperty('--vvh', h + 'px');
+  const up = (window.innerHeight - h) > 90;               // 키보드가 올라온 상태
+  document.querySelectorAll('.modal').forEach(m => m.classList.toggle('kb', up));
+  const a = document.activeElement;
+  if (up && a && a.tagName === 'INPUT') seeInput(a);
+}
+function seeInput(el) {
+  setTimeout(() => { try { el.scrollIntoView({ block:'center' }); } catch (e) {} }, 60);
+}
+if (vv) { vv.addEventListener('resize', fitKb); vv.addEventListener('scroll', fitKb); }
+window.addEventListener('resize', fitKb);
+document.querySelectorAll('input[type=text], input[type=number]').forEach(inp => {
+  inp.addEventListener('focus', () => { fitKb(); seeInput(inp); setTimeout(() => seeInput(inp), 320); });
+});
+fitKb();
+
+/* ── 안드로이드 뒤로가기 ── */
+window.onBack = function () {
+  if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+    document.activeElement.blur(); return;               // 키보드부터 내린다
+  }
+  if ($('mDlg').classList.contains('show')) { hide('mDlg'); dlgCb = null; return; }
+  const open = [...document.querySelectorAll('.modal.show')];
+  if (open.length) { open[open.length - 1].classList.remove('show'); return; }
+  ask('앱을 닫을까요?', () => {
+    if (window.SeolShare && window.SeolShare.finishApp) window.SeolShare.finishApp();
+  });
+};
+
+/* ── 앱인지 웹인지 ──
+   안드로이드 앱은 자바가 SeolNet/SeolShare 브릿지를 넣어 준다. 없으면 브라우저(아이폰 등)에서 연 웹판. */
+const IS_APP = !!(window.SeolNet && typeof window.SeolNet.enqueue === 'function');
+
+/* ── 전송 ── */
+const NET = IS_APP ? (function () {
+  const B = window.SeolNet;
+  return {
+    on: true,
+    setUrl(u) { B.setUrl(u || ''); },
+    queue(o)  { if (st.url) B.enqueue(JSON.stringify(o)); },
+    now(o)    { if (st.url) B.sendNow(JSON.stringify(o)); },
+    askTotal(){ if (B.requestTotal) B.requestTotal(); },
+    total()   { try { return B.getTotal ? JSON.parse(B.getTotal() || 'null') : null; } catch (e) { return null; } },
+    pending() { return B.pending() | 0; },
+    last()    { return String(B.lastResult() || ''); },
+    flush()   { B.flush(); }
+  };
+})() : webNet();
+
+/* 웹판 전송. 자바 SeolNet과 같은 규칙으로 돈다:
+   record는 성공할 때까지 localStorage 큐에 두고 재시도, live는 한 번만 보내고 실패하면 버린다.
+   큐에는 본문만 넣고 주소는 따로 둔다 (나중에 주소를 고치면 밀린 기록이 새 주소로 가야 하므로).
+   Apps Script는 Content-Type이 text/plain이면 CORS 예비요청 없이 받고, 응답에 Access-Control-Allow-Origin:*를 붙여 준다.
+   페이지가 https에서 떠야 한다 (file:// 로 열면 브라우저가 응답을 막아 전부 "연결 안 됨"이 된다). */
+function webNet() {
+  const K = 'seolcount_net';
+  const MAXQ = 2000, MAXREJ = 30, BO_MIN = 3000, BO_MAX = 300000;
+  let s = { url:'', q:[], last:'아직 전송한 적 없음' };
+  try { const o = JSON.parse(localStorage.getItem(K)); if (o && Array.isArray(o.q)) s = Object.assign(s, o); } catch (e) {}
+  const store = () => { try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {} };
+  let draining = false, liveBusy = false, totalBusy = false, totalJson = '', wake = null;
+  const cut = (t, n) => { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length <= n ? t : t.slice(0, n) + '…'; };
+  const hhmmss = () => { const d = new Date(); return p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds()); };
+
+  // 0 성공 / 1 못 붙음(오프라인 등 — 실패 횟수 안 세고 계속 재시도) / 2 서버가 거부(한도 넘으면 그 건만 버림)
+  async function post(body) {
+    let res;
+    try {
+      res = await fetch(s.url, { method:'POST', body:body, credentials:'omit', redirect:'follow',
+                                 headers:{ 'Content-Type':'text/plain;charset=utf-8' } });
+    } catch (e) {
+      // 오프라인이거나, 배포 권한이 '모든 사용자'가 아니라 로그인 페이지로 넘어가 CORS에 막힌 경우. 둘을 가릴 수 없다.
+      s.last = navigator.onLine === false ? '전송 실패: 오프라인'
+             : "전송 실패: 연결 안 됨 — 오프라인이거나, 배포 시 액세스 권한이 '모든 사용자'가 아닐 수 있습니다";
+      return 1;
+    }
+    const txt = await res.text().catch(() => '');
+    if (res.status === 200) {
+      if (txt.startsWith('ERR') || txt === 'BUSY') { s.last = '시트가 거부함: ' + cut(txt, 70); return 2; }
+      s.last = '성공 ' + hhmmss() + (txt ? ' (' + cut(txt, 40) + ')' : '');
+      return 0;
+    }
+    if (res.status === 401 || res.status === 403) { s.last = '권한 오류 ' + res.status + " — 배포 시 액세스 권한을 '모든 사용자'로 하셨는지 확인하십시오"; return 2; }
+    if (res.status === 404) { s.last = '주소 없음 404 — 웹앱 URL이 /exec 로 끝나는지 확인하십시오'; return 2; }
+    s.last = '실패 HTTP ' + res.status + ' (' + cut(txt, 50) + ')';
+    return 2;
+  }
+  // 기다리는 중에 flush()가 오면 바로 깨어난다 (기록 창 "전송"을 눌렀을 때 8초 안에 결과가 나오게)
+  const sleep = ms => new Promise(ok => { const t = setTimeout(() => { wake = null; ok(); }, ms);
+                                          wake = () => { clearTimeout(t); wake = null; ok(); }; });
+  async function drain() {
+    if (!s.url || draining) return;
+    draining = true;
+    let bo = BO_MIN;
+    try {
+      while (s.url && s.q.length) {
+        const h = s.q[0];
+        if (!h || typeof h.b !== 'string') { s.q.shift(); store(); continue; }   // 깨진 항목 버림
+        const r = await post(h.b);
+        if (r === 0) { s.q.shift(); store(); bo = BO_MIN; continue; }
+        if (r === 2) {
+          h.f = (h.f || 0) + 1;
+          if (h.f >= MAXREJ) { s.q.shift(); s.last = '서버가 계속 거부해 1건을 버림 — ' + s.last; store(); bo = BO_MIN; continue; }
+        }
+        store();
+        await sleep(bo);
+        bo = Math.min(bo * 2, BO_MAX);
+      }
+    } finally { draining = false; }
+  }
+  const api = {
+    on: true,
+    setUrl(u) { u = (u || '').trim(); if (u === s.url) return; s.url = u; store(); if (u) api.flush(); },
+    queue(o)  { if (!s.url) return;
+                if (s.q.length >= MAXQ) { s.q.shift(); s.last = '큐가 가득 참(' + MAXQ + '건). 가장 오래된 기록을 버림'; }
+                s.q.push({ b: JSON.stringify(o), f: 0 }); store(); drain(); },
+    now(o)    { if (!s.url || liveBusy) return;                    // 앞 전송이 안 끝났으면 건너뜀
+                liveBusy = true; post(JSON.stringify(o)).catch(() => {}).finally(() => { liveBusy = false; }); },
+    askTotal(){ if (!s.url || totalBusy) return;
+                totalBusy = true;
+                fetch(s.url + (s.url.indexOf('?') >= 0 ? '&' : '?') + 'action=total', { credentials:'omit' })
+                  .then(r => r.ok ? r.text() : '').then(t => { if (t && t.startsWith('{')) totalJson = t; })
+                  .catch(() => {}).finally(() => { totalBusy = false; }); },
+    total()   { try { return totalJson ? JSON.parse(totalJson) : null; } catch (e) { return null; } },
+    pending() { return s.q.length; },
+    last()    { return s.last; },
+    flush()   { if (wake) wake(); else drain(); }
+  };
+  window.addEventListener('online', api.flush);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') api.flush(); });
+  return api;
+}
+
+const SS = () => window.SeolShare;
+/* 공유: 앱은 안드로이드 공유 시트, 웹은 navigator.share(아이폰 사파리 됨). 둘 다 없으면 클립보드로. */
+function share(sub, txt) {
+  if (SS() && SS().shareText) { SS().shareText(sub, txt); return; }
+  if (navigator.share) { navigator.share({ title: sub, text: txt }).catch(() => {}); return; }
+  copyText(txt).then(ok => say(ok ? '이 브라우저는 공유 기능이 없어\n클립보드에 복사했습니다.' : '공유는 앱에서만 됩니다.'));
+}
+/* 클립보드: 앱은 자바, 웹은 navigator.clipboard (사용자 터치 안에서 불러야 한다), 그것도 없으면 옛 방식 */
+function copyText(t) {
+  if (SS() && SS().copyText) { SS().copyText(t); return Promise.resolve(true); }
+  if (navigator.clipboard && navigator.clipboard.writeText)
+    return navigator.clipboard.writeText(t).then(() => true, () => legacyCopy(t));
+  return Promise.resolve(legacyCopy(t));
+}
+function legacyCopy(t) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;-webkit-user-select:text;user-select:text';
+    document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, t.length);
+    const ok = document.execCommand('copy'); ta.remove(); return ok;
+  } catch (e) { return false; }
+}
+/* 웹판 "스크립트 복사": 터치 뒤에 fetch를 기다리면 클립보드 권한이 끝나 버리므로 도움말을 열 때 미리 받아 둔다 */
+let gsText = '';
+function loadScript() {
+  if (IS_APP || gsText) return;
+  fetch('seolcount.gs').then(r => r.ok ? r.text() : '').then(t => { gsText = t; }).catch(() => {});
+}
+
+function payload(r, idx, type) {
+  return { type: type, key: recKey(idx),
+    place: r.place || '(장소없음)', recName: recName(idx), writer: st.writer,
+    start: stamp(r.start), end: r.end ? stamp(r.end) : '', elapsed: elapsed(r),
+    inCnt: r.in, outCnt: r.out, inside: r.in - r.out,
+    peak: r.peak, peakAt: r.peakAt ? stamp(r.peakAt) : '',
+    maxCap: st.maxCap, state: r.end ? '정지' : '기록중' };
+}
+function sendLive() {
+  const i = st.recs.length - 1, r = st.recs[i];
+  if (r) NET.now(Object.assign(payload(r, i, 'live'), { at: stamp(Date.now()) }));
+}
+
+function sendRecord(idx, quiet) {
+  if (!st.url) { if (!quiet) say('전송주소가 없습니다.\n설정에서 넣으십시오.'); return; }
+  if (!NET.on) { if (!quiet) say('전송은 앱에서만 됩니다.'); return; }
+  NET.queue(payload(st.recs[idx], idx, 'record'));
+  NET.flush();
+  if (quiet) return;
+  dialog('보내는 중입니다...', {});
+  waitSent(idx, Date.now() + 8000);
+}
+/* 횟수가 아니라 실제 시각으로 판정한다 (화면이 가려져 타이머가 늦춰져도 제대로 끝나도록) */
+function waitSent(idx, deadline) {
+  if (!$('mDlg').classList.contains('show')) return;
+  if (NET.pending() === 0) {
+    if (st.recs[idx]) st.recs[idx].sent = true;
+    save(); drawHist();
+    $('dlgMsg').textContent = '보내기에 성공하였습니다.';
+    return;
+  }
+  if (Date.now() > deadline) {
+    $('dlgMsg').textContent = '보내지 못했습니다.\n' + (NET.last() || '잠시 뒤 다시 눌러보십시오.');
+    return;
+  }
+  setTimeout(() => waitSent(idx, deadline), 300);
+}
+
+/* ── 시작 / 정지 / 취소 ── */
+function start() {
+  const t = Date.now();
+  st.n = (st.n || 0) + 1;
+  // 시각만 쓰면 같은 밀리초에 만든 두 건의 키가 겹쳐 시트에서 서로 덮어쓴다. 일련번호를 함께 넣는다.
+  st.recs.push({ id: st.dev + '-' + t.toString(36) + '-' + st.n.toString(36),
+                 place: st.place, no: nextNo(st.place),
+                 start: t, end: 0, in: 0, out: 0, peak: 0, peakAt: 0, sent: false });
+  if (st.recs.length > 200) st.recs.splice(0, st.recs.length - 200);
+  save(); draw();
+}
+function stop() {
+  const r = cur(); if (!r) return;
+  ask('기록을 정지하고 저장할까요?\n경과 ' + elapsed(r) + ' · 입장 ' + r.in + ' · 퇴장 ' + r.out, () => {
+    r.end = Date.now();
+    const i = st.recs.length - 1;
+    if (st.url) { sendRecord(i, true); sendLive(); }
+    save(); draw();
+  });
+}
+function cancelRec() {
+  const r = cur(); if (!r) return;
+  ask('이 기록을 저장하지 않고 버릴까요?\n입장 ' + r.in + ' · 퇴장 ' + r.out, () => {
+    st.recs.pop();
+    save(); draw();
+  });
+}
+
+/* ── 계수 ── */
+function bump(kind, d) {
+  const r = cur(); if (!r) return;
+  try { navigator.vibrate(d > 0 ? 15 : 40); } catch (e) {}
+  if (kind === 'in') r.in = Math.max(0, r.in + d); else r.out = Math.max(0, r.out + d);
+  const n = r.in - r.out;
+  if (n > r.peak) { r.peak = n; r.peakAt = Date.now(); }
+  save(); draw();
+}
+function bindZone(el, kind, cls) {
+  const flash = () => { el.classList.add(cls); setTimeout(() => el.classList.remove(cls), 110); };
+  el.addEventListener('touchstart', e => {
+    if (e.target.closest('.minus')) return;
+    e.preventDefault();
+    if (!cur()) return;
+    for (let i = 0; i < e.changedTouches.length; i++) bump(kind, +1);
+    flash();
+  }, { passive:false });
+  el.addEventListener('mousedown', e => {
+    if (e.target.closest('.minus')) return;
+    if (cur()) { bump(kind, +1); flash(); }
+  });
+}
+bindZone($('zoneOut'), 'out', 'flash-out');
+bindZone($('zoneIn'),  'in',  'flash-in');
+function bindMinus(el, kind) {
+  el.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); bump(kind, -1); }, { passive:false });
+  el.addEventListener('mousedown',  e => { e.stopPropagation(); bump(kind, -1); });
+}
+bindMinus($('minusOut'), 'out');
+bindMinus($('minusIn'),  'in');
+
+/* ── 화면 ── */
+let totalCache = null;
+function draw() {
+  const r = cur();
+  $('cntIn').textContent  = r ? r.in  : 0;
+  $('cntOut').textContent = r ? r.out : 0;
+  $('place').textContent  = st.place;
+  $('cover').classList.toggle('hide', !!r);
+  $('btnStop').style.display   = r ? '' : 'none';
+  $('btnCancel').style.display = r ? '' : 'none';
+  drawCap(); drawClock();
+}
+function drawCap() {
+  const mine = inside();
+  let n = mine, sub = '현재 인원 / 수용 인원';
+  if (st.url && totalCache && typeof totalCache.inside === 'number' && totalCache.gates > 1) {
+    n = totalCache.inside;
+    sub = '전체 ' + totalCache.gates + '곳 합계 · 여기 ' + mine + '명';
+  }
+  $('capNum').innerHTML = '<span class="cur">' + n + '</span><span class="max"> / ' + st.maxCap + '</span>';
+  $('capSub').textContent = sub;
+  const b = $('capBox');
+  b.classList.remove('warn', 'full');
+  if (st.maxCap > 0) {
+    if (n >= st.maxCap) b.classList.add('full');
+    else if (n >= st.maxCap * 0.9) b.classList.add('warn');
+  }
+}
+function drawClock() { const r = cur(); $('clock').textContent = r ? elapsed(r) : '00:00:00'; }
+
+/* ── 버튼 ── */
+$('btnStart').addEventListener('click', () => {
+  if (!st.place) { say('설정에서 장소명을\n먼저 넣으십시오.'); return; }
+  start();
+});
+$('btnStop').addEventListener('click', stop);
+$('btnCancel').addEventListener('click', cancelRec);
+
+/* ── 설정 ── */
+$('btnSet').addEventListener('click', () => {
+  $('fPlace').value  = st.place;
+  $('fMax').value    = st.maxCap || '';
+  $('fWriter').value = st.writer;
+  $('fUrl').value    = st.url;
+  show('mSet');
+});
+$('setX').addEventListener('click', () => hide('mSet'));
+$('setSave').addEventListener('click', () => {
+  st.place  = $('fPlace').value.trim();
+  const v   = parseInt($('fMax').value, 10);
+  st.maxCap = (!isNaN(v) && v >= 0) ? v : 0;
+  st.writer = $('fWriter').value.trim();
+  st.url    = $('fUrl').value.trim();
+  NET.setUrl(st.url); totalCache = null;
+  save(); draw(); hide('mSet');
+});
+$('urlHelp').addEventListener('click', () => {
+  loadScript();
+  const label = IS_APP ? '스크립트 받기' : '스크립트 복사';
+  const done = m => { $('dlgMsg').textContent = m; $('dlgMsg').className = ''; $('dlgExtra').style.display = 'none'; };
+  dialog('폰 여러 대로 센 숫자를 한 곳에 모을 때만 씁니다.\n' +
+         '혼자 쓰시면 비워두십시오.\n\n' +
+         '1. 구글 스프레드시트를 새로 만든다\n' +
+         '2. 확장 프로그램 → Apps Script\n' +
+         '3. 아래 "' + label + '"를 눌러 받은 내용을 붙여넣고 저장\n' +
+         '4. 배포 → 새 배포 → 웹 앱\n' +
+         '     실행: 나 / 액세스: 모든 사용자\n' +
+         '5. 나온 주소를 이 칸에 붙여넣는다',
+    { left:true, extra:label, onExtra: () => {
+        if (SS() && SS().saveScript) { done(SS().saveScript()); return; }
+        if (!gsText) { $('dlgMsg').textContent = '스크립트를 아직 못 불러왔습니다.\n잠시 후 다시 누르십시오.'; return; }
+        copyText(gsText).then(ok => done(ok ? '스크립트를 클립보드에 담았습니다.\nApps Script 편집기에 붙여넣으십시오.'
+                                            : '복사하지 못했습니다.'));
+      } });
+});
+$('fUrl').addEventListener('input', () => {
+  const t = $('fUrl').value, i = t.indexOf('seolcount:');
+  if (i < 0) return;
+  try {
+    const c = JSON.parse(decodeURIComponent(escape(atob(t.slice(i + 10).split(/\s/)[0]))));
+    $('fUrl').value = c.u || '';
+    if (c.m) $('fMax').value = c.m;
+  } catch (e) {}
+});
+
+/* ── 기록 ── */
+$('btnHist').addEventListener('click', () => { drawHist(); show('mHist'); });
+$('histX').addEventListener('click', () => hide('mHist'));
+
+function drawHist() {
+  const L = $('histList');
+  if (!st.recs.length) { L.innerHTML = '<div class="empty">기록이 없습니다.</div>'; return; }
+  L.innerHTML = st.recs.map((r, i) =>
+    '<div class="rec' + (r.end ? '' : ' live') + '">' +
+      '<input type="checkbox" data-ck="' + i + '">' +
+      '<div class="body">' +
+        '<div class="l1">' + recName(i) + (r.sent ? ' <span class="ok">(보냄)</span>' : '') +
+          ' <span class="dt">- ' + ymd(r.start) + ' ' +
+          hm(r.start) + '~' + (r.end ? hm(r.end) : '진행중') + ' (' + elapsed(r) + ')</span></div>' +
+        '<div class="l2">입장 <b class="i">' + r.in + '</b>  ·  퇴장 <b class="o">' + r.out +
+          '</b>  ·  잔류 <b>' + (r.in - r.out) + '</b>  ·  가장 많을 때 <b>' + r.peak + '</b>' +
+          (r.peakAt ? ' (' + hm(r.peakAt) + ')' : '') + '</div>' +
+      '</div>' +
+      '<button class="a" data-act="send"  data-i="' + i + '">전송</button>' +
+      '<button class="a" data-act="key"   data-i="' + i + '">키</button>' +
+      '<button class="a" data-act="share" data-i="' + i + '">공유</button>' +
+    '</div>'
+  ).reverse().join('');
+}
+
+$('histList').addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const i = parseInt(b.dataset.i, 10);
+  if (b.dataset.act === 'share') { share('seolcount ' + recName(i), textOne(i)); return; }
+  if (b.dataset.act === 'send')  { sendRecord(i, false); return; }
+  if (b.dataset.act === 'key') {
+    dialog(recKey(i), { key:true, extra:'복사', onExtra: () => {
+      copyText(recKey(i)).then(ok => { if (ok) $('dlgExtra').textContent = '복사됨'; });
+    }});
+  }
+});
+
+$('histShareAll').addEventListener('click', () => share('seolcount 기록', textAll()));
+$('histDelSel').addEventListener('click', () => {
+  const sel = [...$('histList').querySelectorAll('input[data-ck]:checked')]
+                .map(c => parseInt(c.dataset.ck, 10));
+  if (!sel.length) { say('지울 기록을 먼저\n선택하십시오.'); return; }
+  if (sel.some(i => !st.recs[i].end)) { say('진행 중인 기록은 지울 수 없습니다.\n먼저 정지하십시오.'); return; }
+  ask(sel.length + '건을 지울까요?', () => {
+    sel.sort((a,b) => b-a).forEach(i => st.recs.splice(i, 1));
+    save(); drawHist(); draw();
+  });
+});
+
+function textOne(i) {
+  const r = st.recs[i];
+  return recName(i) + ' - ' + ymd(r.start) + ' ' + hm(r.start) + '~' +
+    (r.end ? hm(r.end) : '진행중') + ' (' + elapsed(r) + ')\n' +
+    (st.writer ? '기록자 ' + st.writer + '\n' : '') +
+    '입장 ' + r.in + ' · 퇴장 ' + r.out + ' · 잔류 ' + (r.in - r.out) + '\n' +
+    '가장 많을 때 ' + r.peak + (r.peakAt ? ' (' + hm(r.peakAt) + ')' : '') +
+    (st.maxCap ? ' / 수용 ' + st.maxCap : '');
+}
+const textAll = () => st.recs.length ? st.recs.map((r,i) => textOne(i)).join('\n\n') : '기록 없음';
+
+/* ── 1초마다 ── */
+let liveTs = 0;
+setInterval(() => {
+  drawClock();
+  if (!st.url) return;
+  const now = Date.now();
+  if (cur() && now - liveTs >= LIVE_SEC * 1000) { sendLive(); NET.askTotal(); liveTs = now; }
+  const t = NET.total();
+  if (t && JSON.stringify(t) !== JSON.stringify(totalCache)) { totalCache = t; drawCap(); }
+}, 1000);
+
+/* 화면 꺼짐 방지 (브라우저용) */
+let wl = null;
+async function keepAwake() { try { if ('wakeLock' in navigator) wl = await navigator.wakeLock.request('screen'); } catch (e) {} }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') keepAwake(); });
+document.addEventListener('touchstart', () => { if (!wl) keepAwake(); }, { once:true });
+
+/* ── 웹판에서만: 가로 돌리기 안내 · 홈 화면 추가 안내 · 오프라인 캐시 ── */
+if (!IS_APP) {
+  const fitRotate = () => $('rotate').classList.toggle('show', window.innerHeight > window.innerWidth);
+  window.addEventListener('resize', fitRotate); fitRotate();
+  // 안드로이드 크롬(홈 화면 추가)은 가로 고정이 되고, 아이폰은 안 되므로 조용히 넘어간다
+  document.addEventListener('touchstart', () => {
+    try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch (e) {}
+  }, { once:true });
+  // 사파리/크롬 창이 아니라 홈 화면에서 연 전체화면인지
+  const standalone = navigator.standalone === true ||
+    (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches));
+  if (!standalone) {
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    $('homeHint').textContent = ios
+      ? '사파리 아래 공유 버튼 → "홈 화면에 추가"로 열면 주소창 없이 전체화면이 됩니다.'
+      : '브라우저 메뉴 → "홈 화면에 추가"로 열면 주소창 없이 전체화면이 됩니다.';
+    $('homeHint').classList.remove('hide');
+  }
+  // 한 번 열어 두면 행사장에서 인터넷이 끊겨도 뜨게
+  if ('serviceWorker' in navigator && location.protocol === 'https:')
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+NET.setUrl(st.url);
+save();
+draw();
+</script>
+</body>
+</html>
