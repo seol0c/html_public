@@ -2,128 +2,192 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>5분 구상 발표</title>
-<meta name="description" content="제시문과 문항을 보고 5분 구상한 뒤 5분 발표하는 자연계열 제시문 면접 연습">
+<meta name="description" content="제시문과 문항을 보고 5분 구상한 뒤 5분 발표하고, 서로의 키워드를 모아 보는 자연계열 제시문 면접 연습">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <style>
-:root{
-  --bg:#f7f5f1; --panel:#ffffff; --ink:#20262d; --muted:#667080; --line:#dcd8d0;
-  --think:#23588f; --speak:#b4540f; --warn:#b3261e; --done:#3d7a4f;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#15181c; --panel:#1e2329; --ink:#e9e7e2; --muted:#9aa4b1; --line:#343b44;
-    --think:#7db4ee; --speak:#f0a35e; --warn:#ff8a80; --done:#84cf9c;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#15181c; --panel:#1e2329; --ink:#e9e7e2; --muted:#9aa4b1; --line:#343b44;
-  --think:#7db4ee; --speak:#f0a35e; --warn:#ff8a80; --done:#84cf9c;
-}
+:root{--bg:#f4f5f9;--card:#fff;--ink:#1b1e2b;--mut:#6b7186;--line:#e2e5ef;--acc:#3f4bb0;--acc-ink:#fff;--acc2:#0a8aa3;--ok:#1a7f45;--ng:#d03a3a;--gold:#b8860b;--speak:#b4540f;--tint:#eceef8;
+  --font:"Noto Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151d;--card:#1c1f2a;--ink:#eceef6;--mut:#9aa0b4;--line:#2b2f3e;--acc:#8a93ea;--acc-ink:#101223;--acc2:#3cc1d9;--ok:#4ade80;--ng:#f87171;--gold:#e6c35c;--speak:#f0a35e;--tint:#262a3a}}
+:root[data-theme="dark"]{--bg:#13151d;--card:#1c1f2a;--ink:#eceef6;--mut:#9aa0b4;--line:#2b2f3e;--acc:#8a93ea;--acc-ink:#101223;--acc2:#3cc1d9;--ok:#4ade80;--ng:#f87171;--gold:#e6c35c;--speak:#f0a35e;--tint:#262a3a}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{
-  margin:0; background:var(--bg); color:var(--ink);
-  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
-  font-size:clamp(17px,.55vw + 13px,23px); line-height:1.7; word-break:keep-all; overflow-wrap:anywhere;
-}
-button{font:inherit;color:inherit;cursor:pointer}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.7;word-break:keep-all;overflow-wrap:break-word;--phase:var(--acc)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;white-space:nowrap}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
 [hidden]{display:none!important}
-math{font-size:1.05em;math-style:normal}
-.wrap{max-width:1440px;margin:0 auto;padding:0 clamp(16px,3vw,40px)}
-
-/* 목록 */
-#home{padding-top:clamp(28px,7vh,72px);padding-bottom:clamp(28px,7vh,72px)}
-#home h1{font-size:clamp(28px,4vw,44px);line-height:1.25;margin:0 0 .3em}
-#home .lead{color:var(--muted);margin:0 0 1.6em;max-width:44em}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px}
-.grid button{
-  background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px 12px;
-  font-weight:700;font-size:1.15em;line-height:1.3;
-}
-.grid button small{display:block;font-weight:400;font-size:.68em;color:var(--muted);margin-top:4px}
-.grid button:hover{border-color:var(--think);color:var(--think)}
-.random{background:var(--think);color:var(--bg);border:0;border-radius:10px;padding:13px 22px;font-weight:700}
-.note{color:var(--muted);font-size:.8em;margin-top:2.4em;max-width:46em}
-
+.page{max-width:640px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 0 8px}
+.top h1{margin:0;font-size:17px;font-weight:700;color:var(--mut)}
+.top span{font-size:14px;color:var(--mut);font-variant-numeric:tabular-nums}
+.sync{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:0 0 10px;font-size:14px;color:var(--mut)}
+.sync b{color:var(--ink)}
+.sync .st{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sync .bt{display:flex;gap:6px;flex:0 0 auto}
+.sync button{border:1px solid var(--line);background:none;color:var(--mut);border-radius:8px;padding:6px 12px;font-size:13px;line-height:1.3}
+.sync form{display:flex;gap:6px;flex-wrap:wrap;align-items:center;width:100%}
+.sync input{flex:1 1 0;min-width:0;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 10px}
+.sync .go{border-color:var(--acc);color:var(--acc);font-weight:700}
+.sync .msg{width:100%;font-size:12.5px}
+.sync .msg:empty{display:none}
+.err{color:var(--ng)!important}
+.tabs{display:flex;gap:6px;margin:0 0 12px}
+.tabs button{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 4px;font-weight:700;font-size:15px}
+.tabs button.on{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.chips{display:flex;gap:6px;margin:0 0 12px}
+.chips button{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--mut);border-radius:10px;padding:7px 2px;font-size:14px}
+.chips button.on{border-color:var(--acc);color:var(--acc);font-weight:700}
+.grid{display:flex;flex-direction:column;gap:8px}
+.tile,.thead{display:grid;grid-template-columns:minmax(0,1fr) 2.3em 2.3em 2.3em;align-items:center;gap:2px;width:100%;padding:11px 14px;text-align:left;line-height:1.35}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;white-space:nowrap}
+.tile:hover{border-color:var(--acc)}
+.tile .nm{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.tile .nm b{font-size:16px}
+.tile .nm small{color:var(--mut);font-size:13px;margin-left:6px}
+.tile .nm .d{color:var(--ok);font-weight:700;margin-left:6px}
+.tile .n,.thead span{text-align:center;font-variant-numeric:tabular-nums}
+.tile .n{font-size:15px;font-weight:700}
+.thead{padding-top:0;padding-bottom:0;margin-bottom:-4px;font-size:12px;color:var(--mut)}
+.n.g{color:var(--ok)}.n.m{color:var(--acc2)}.n.b{color:var(--ng)}.n.z{color:var(--line)}
+.go-random{width:100%;margin-top:12px;border:2px solid var(--acc);border-radius:10px;background:var(--acc);color:var(--acc-ink);font-weight:700;padding:12px}
+.empty{padding:30px 10px;text-align:center;color:var(--mut)}
+.note{color:var(--mut);font-size:13px;margin-top:20px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 10px}
+.panel h2{font-size:16px;margin:0 0 8px}
+.panel .sub{color:var(--mut);font-size:13px;margin:-6px 0 8px}
+.rank{list-style:none;margin:0;padding:0}
+.rank li{display:grid;grid-template-columns:minmax(4.5em,auto) minmax(0,1fr) 2em;gap:10px;align-items:center;margin:5px 0;font-size:15px}
+.rank .w{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:11em}
+.rank .bar{height:12px;background:var(--tint);border-radius:6px;overflow:hidden;display:block}
+.rank .bar i{display:block;height:100%;background:var(--acc2);border-radius:6px}
+.rank .mine .w{color:var(--acc)}
+.rank .mine .bar i{background:var(--acc)}
+.rank b{text-align:right;font-variant-numeric:tabular-nums}
+.row{width:100%;display:flex;align-items:center;gap:10px;background:none;border:0;border-top:1px solid var(--line);padding:10px 0;text-align:left;white-space:normal}
+.row:first-of-type{border-top:0}
+.row b{flex:0 0 5em}
+.row span{flex:1;min-width:0;color:var(--mut);font-size:15px}
+.row span em{font-style:normal;color:var(--ink);font-weight:700}
+.row:hover b{color:var(--acc)}
+/* 로그인 */
+#login{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.lg{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
+.lg h1{margin:0;font-size:26px;line-height:1.3}
+.lg-sub{margin:0 0 6px;color:var(--mut);font-size:15px}
+.lg input{width:100%;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:12px 14px;font-size:17px}
+.lg .go-random{margin-top:4px}
+.lg .msg{font-size:14px;color:var(--ng)}
+.lg .msg:empty{display:none}
+.lg-note{margin:6px 0 0;color:var(--mut);font-size:13.5px;line-height:1.6}
 /* 시작 화면 */
 #gate{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:24px}
 #gate h2{font-size:clamp(32px,5vw,52px);margin:0;line-height:1.2}
-#gate p{color:var(--muted);margin:0 0 14px}
-
-/* 타이머 줄 */
+#gate p{color:var(--mut);margin:0 0 14px}
+#gate .go-random{width:auto;padding:12px 34px;margin:0}
+.link{background:none;border:0;color:var(--mut);text-decoration:underline}
+/* 풀이 화면 */
+#run{font-size:clamp(17px,.55vw + 13px,23px)}
+.wide{max-width:1440px;margin:0 auto;padding-left:clamp(16px,3vw,40px);padding-right:clamp(16px,3vw,40px)}
 #bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
 .barin{display:flex;align-items:center;gap:clamp(10px,2vw,24px);padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
 #sheetname{font-weight:700}
 .clock{display:flex;align-items:baseline;gap:12px;margin-right:auto;color:var(--phase)}
 #phase{font-weight:700}
-#time{font-size:clamp(34px,4vw,54px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+#time{font-size:clamp(34px,4vw,54px);font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
 .btns{display:flex;gap:8px;flex-wrap:wrap}
-.btns button{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 14px;font-size:.85em;white-space:nowrap}
-.btns button:hover{border-color:var(--phase)}
-.btns button.main{background:var(--phase);border-color:var(--phase);color:var(--bg);font-weight:700}
+.btns button{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 14px;font-size:.85em}
+.btns button.main{background:var(--phase);border-color:var(--phase);color:var(--acc-ink);font-weight:700}
 #progress{height:5px;background:var(--line)}
 #fill{height:100%;width:100%;background:var(--phase);transform-origin:left}
-body{--phase:var(--think)}
 body[data-phase="speak"]{--phase:var(--speak)}
-body[data-phase="done"]{--phase:var(--done)}
-body[data-last="1"]{--phase:var(--warn)}
+body[data-phase="done"]{--phase:var(--ok)}
+body[data-last="1"]{--phase:var(--ng)}
 body[data-paused="1"] .clock{opacity:.55}
-
-/* 구상지 */
-#sheets{padding-top:clamp(16px,3vh,32px);padding-bottom:40px}
+#after{margin-top:clamp(14px,2.6vw,36px);padding-bottom:40px}
+#sheet{padding-top:clamp(16px,3vh,32px)}
 .sheet{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(16px,2.6vw,36px)}
 @media (min-width:1000px){.sheet.two{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
-.block{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:clamp(16px,2vw,28px)}
-.block h3{font-size:.8em;color:var(--muted);margin:0 0 .6em;font-weight:700}
+.block{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(16px,2vw,28px)}
+.block h3{font-size:.8em;color:var(--mut);margin:0 0 .6em;font-weight:700}
 .jm{display:grid;grid-template-columns:2.6em minmax(0,1fr);margin:0 0 .75em}
 .jm:last-child{margin-bottom:0}
-.jm>b{font-weight:700}
-.poem{margin:0}
-.poem span{display:block}
-.src{display:block;text-align:right;color:var(--muted);font-size:.85em}
+.src{text-align:right;color:var(--mut);font-size:.85em}
+.talk{font-weight:400;margin-top:.3em;padding-left:.9em;border-left:3px solid var(--line)}
 ol.qs{margin:0;padding:0;list-style:none;counter-reset:q}
-ol.qs>li{counter-increment:q;display:grid;grid-template-columns:2em minmax(0,1fr);margin:0 0 .9em;font-weight:600}
+ol.qs>li{counter-increment:q;display:grid;grid-template-columns:2em minmax(0,1fr);margin:0 0 .9em;font-weight:500}
 ol.qs>li:last-child{margin-bottom:0}
-ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:800}
-.talk{font-weight:400;margin:.4em 0 0;padding-left:.9em;border-left:3px solid var(--line)}
-.talk span{display:block}
-.words{display:flex;flex-wrap:wrap;justify-content:center;gap:.5em 2.2em;font-size:1.5em;font-weight:800;padding:.5em 0}
+ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
+.words{display:flex;flex-wrap:wrap;justify-content:center;gap:.5em 2.2em;font-size:1.5em;font-weight:700;padding:.5em 0}
+.katex{font-size:1.05em}
+/* 끝난 뒤 */
+.after{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:1000px){.after{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}}
+.kwform{display:flex;gap:6px;margin:6px 0}
+.kwform input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 12px}
+.mykw{font-size:1.15em;font-weight:700;color:var(--acc)}
+.act{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 14px;font-size:.9em}
+.act.main{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
+.votes{display:flex;gap:8px}
+.votes button{flex:1;border:2px solid var(--line);background:var(--card);border-radius:10px;padding:9px 6px;font-weight:700;font-variant-numeric:tabular-nums}
+.votes .good.on{border-color:var(--ok);color:var(--ok)}
+.votes .mid.on{border-color:var(--acc2);color:var(--acc2)}
+.votes .bad.on{border-color:var(--ng);color:var(--ng)}
+.seg{display:flex;gap:8px;margin-top:10px}
+.seg button{flex:1;border:2px solid var(--line);background:var(--card);border-radius:10px;padding:8px 6px;font-size:.9em;font-weight:700}
+.seg button.on{border-color:var(--acc);color:var(--acc)}
+.rank .who{grid-column:1/-1;color:var(--mut);font-size:13px;margin-top:-5px}
+.hint{color:var(--mut);font-size:.82em;margin:6px 0 0}
+.line{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.line h3{margin:0}
 @media (max-width:640px){
   .barin{gap:6px 12px}
-  #sheetname{order:0}
   .clock{margin-right:0;flex:1;justify-content:flex-end}
   .btns{order:3;width:100%}
-  .btns button{flex:1}
+  .btns button{flex:1;justify-content:center}
 }
 @media (prefers-reduced-motion:no-preference){#fill{transition:transform .25s linear}}
 </style>
 </head>
 <body>
 
-<main id="home" class="wrap">
-  <h1>5분 구상, 5분 발표</h1>
-  <p class="lead">번호를 누르면 제시문과 문항이 바로 나오고 5분 구상이 시작됩니다. 5분이 지나면 알림음과 함께 발표 시간 5분으로 넘어갑니다.</p>
-  <div class="grid" id="grid"></div>
-  <button class="random" id="random">무작위로 시작</button>
-  <p class="note">고려대학교 계열적합전형 자연계열 면접의 기출 형식을 참고해 새로 만든 연습 문제입니다. 실제 기출 문항이나 대학 공식 자료가 아닙니다.</p>
-</main>
+<section id="login" hidden>
+  <form id="lg-form" class="lg">
+    <h1>5분 구상 발표</h1>
+    <p class="lg-sub">이름과 코드를 넣어야 시작할 수 있습니다.</p>
+    <input id="lg-name" placeholder="이름" autocomplete="off" maxlength="20" required>
+    <input id="lg-code" placeholder="숫자 코드" inputmode="numeric" autocomplete="off" maxlength="20" required>
+    <button class="go-random" id="lg-go" type="submit">들어가기</button>
+    <div class="msg" id="lg-msg"></div>
+    <p class="lg-note">같은 이름과 코드를 사용하면 어디서든 이어서 풀고 저장할 수 있습니다.<br>코드는 처음 들어올 때 직접 정하는 숫자입니다. 잊지 않게 기억해 두세요.</p>
+  </form>
+</section>
+
+<div id="home" class="page" hidden>
+  <div class="top"><h1>5분 구상 by seol</h1><span id="topstat"></span></div>
+  <div class="sync" id="sync"></div>
+  <div class="tabs" id="tabs">
+    <button data-v="list" class="on">구상지</button>
+    <button data-v="kw">키워드</button>
+  </div>
+  <div id="box"></div>
+  <p class="note">번호를 누르면 제시문과 문항이 바로 나오고 5분 구상이 시작됩니다. 5분 뒤 알림음과 함께 5분 발표로 넘어가고, 끝나면 키워드를 적어 서로의 답을 봅니다. 고려대학교 계열적합전형 자연계열 면접의 기출 형식을 참고해 새로 만든 연습 문제이며, 실제 기출 문항이나 대학 공식 자료가 아닙니다.</p>
+</div>
 
 <section id="gate" hidden>
   <h2 id="gatename"></h2>
   <p>시작하면 제시문이 나오고 5분 구상이 바로 시작됩니다.</p>
-  <button class="random" id="gatestart">시작</button>
-  <button class="btnlink" id="gatehome" style="background:none;border:0;color:var(--muted);text-decoration:underline">목록으로</button>
+  <button class="go-random" id="gatestart">시작</button>
+  <button class="link" id="gatehome">목록으로</button>
 </section>
 
 <div id="run" hidden>
   <header id="bar">
-    <div class="wrap barin">
+    <div class="wide barin">
       <span id="sheetname"></span>
-      <div class="clock" role="timer" aria-live="off">
-        <span id="phase"></span>
-        <span id="time">05:00</span>
-      </div>
+      <div class="clock" role="timer" aria-live="off"><span id="phase"></span><span id="time">05:00</span></div>
       <div class="btns">
         <button id="pause" title="스페이스바">일시정지</button>
         <button id="skip" class="main">바로 발표</button>
@@ -134,284 +198,372 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:800}
     </div>
     <div id="progress"><div id="fill"></div></div>
   </header>
-
-  <div id="sheets" class="wrap">
-
-<!-- 구상지 1 -->
-<article class="sheet two" data-n="1" hidden>
-  <div class="block"><h3>제시문</h3>
-    <div class="jm"><b>(가)</b><div>혈당량이 높아지면 이자에서 인슐린 분비가 늘어 혈당량을 낮추고, 혈당량이 낮아지면 글루카곤 분비가 늘어 혈당량을 높인다.</div></div>
-    <div class="jm"><b>(나)</b><div>주계열성의 내부에서는 별을 수축시키려는 중력과 팽창시키려는 기체의 압력 차에 의한 힘이 서로 맞서므로, 별은 오랜 기간 일정한 크기를 유지한다.</div></div>
-    <div class="jm"><b>(다)</b><div>상품 가격이 균형 가격보다 높으면 초과 공급이 생겨 가격이 내려가고, 균형 가격보다 낮으면 초과 수요가 생겨 가격이 올라간다.</div></div>
-    <div class="jm"><b>(라)</b><div>수열 <math><mo stretchy="false">{</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="false">}</mo></math>이 <math><msub><mi>a</mi><mn>1</mn></msub><mo>=</mo><mn>10</mn><mo>,</mo><mspace width="0.5em"/><msub><mi>a</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mi>a</mi><mi>n</mi></msub><mo>+</mo><mn>1</mn></math> <math><mo stretchy="false">(</mo><mi>n</mi><mo>≥</mo><mn>1</mn><mo stretchy="false">)</mo></math>을 만족시킨다.</div></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.</span></li>
-    <li><span>문항 1에서 답한 개념의 관점에서 제시문 (라)의 수열을 설명하시오.</span></li>
-    <li><span>문항 1에서 답한 개념과 ‘임계’를 결합하여 설명할 수 있는 현상을 자연 또는 사회에서 찾고, 그 이유를 설명하시오.</span></li>
-  </ol></div>
-</article>
-
-<!-- 구상지 2 -->
-<article class="sheet two" data-n="2" hidden>
-  <div class="block"><h3>제시문</h3>
-    <div class="jm"><b>(가)</b><div>세포막은 세포의 안과 밖을 나눈다. 산소와 같은 작은 분자는 인지질 층을 직접 통과하지만, 포도당이나 이온은 막단백질을 통해서만 이동한다.</div></div>
-    <div class="jm"><b>(나)</b><div>빛이 물에서 공기로 진행할 때, 두 매질이 만나는 면에서 입사각이 임계각보다 크면 빛은 공기로 나가지 못하고 모두 반사된다.</div></div>
-    <div class="jm"><b>(다)</b><div>함수 <math><mi>f</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">|</mo><msup><mi>x</mi><mn>2</mn></msup><mo>−</mo><mn>1</mn><mo stretchy="false">|</mo></math>은 실수 전체의 집합에서 연속이다.</div></div>
-    <div class="jm"><b>(라)</b><div>동영상 플랫폼은 이용 기록을 분석하여 이용자가 좋아할 만한 영상을 골라 보여 준다. 이용자는 원하는 정보를 빠르게 얻지만, 자신과 다른 생각을 접할 기회는 줄어들기도 한다.</div></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>‘경계’라는 단어로 제시문 (가), (나)의 내용을 설명하시오.</span></li>
-    <li><span>‘경계’의 관점에서 제시문 (다)의 함수가 미분가능하지 않은 점을 찾고, 그 이유를 설명하시오.</span></li>
-    <li><span>제시문 (라)에서 떠오르는 개념을 말하고, 이를 ‘경계’와 결합하여 제시문 (라)의 사회적 문제를 설명한 뒤 해결 방안을 제시하시오.</span></li>
-  </ol></div>
-</article>
-
-<!-- 구상지 3 -->
-<article class="sheet two" data-n="3" hidden>
-  <div class="block"><h3>제시문</h3>
-    <div class="jm"><b>(가)</b><div>국제단위계에서 길이 1 m는 빛이 진공에서 <math><mfrac><mn>1</mn><mn>299 792 458</mn></mfrac></math>초 동안 진행한 거리로 정의한다. 이에 따라 어느 나라의 측정값이든 서로 비교할 수 있다.</div></div>
-    <div class="jm"><b>(나)</b><div>평균과 표준편차가 서로 다른 두 시험의 점수도 <math><mi>Z</mi><mo>=</mo><mfrac><mrow><mi>X</mi><mo>−</mo><mi>m</mi></mrow><mi>σ</mi></mfrac></math>로 바꾸면 하나의 잣대로 비교할 수 있다.</div></div>
-    <div class="jm"><b>(다)</b><div>19세기 아일랜드는 몇몇 감자 품종에 크게 의존하고 있었는데, 감자 역병이 번지자 수확이 급감하여 대기근을 겪었다.</div></div>
-    <div class="jm"><b>(라)</b><div>같은 탄소 원자로 이루어져 있어도 다이아몬드, 흑연, 풀러렌, 탄소 나노튜브는 원자의 배열이 달라 단단함과 전기 전도성이 서로 다르다.</div></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>제시문 (가), (나)에서 공통으로 연상되는 개념을 제시하고, 그 이유를 설명하시오.</span></li>
-    <li><span>제시문 (다), (라)에서 공통으로 연상되는 개념을 제시하고, 문항 1의 개념과 대비하여 설명하시오.</span></li>
-    <li><span>문항 1의 개념과 문항 2의 개념이 결합될 때 발생할 수 있는 긍정적인 사례와 부정적인 사례를 각각 찾아 설명하시오.</span></li>
-  </ol></div>
-</article>
-
-<!-- 구상지 4 -->
-<article class="sheet two" data-n="4" hidden>
-  <div class="block"><h3>제시문</h3>
-    <div class="jm"><b>(가)</b><div>수소 원자의 전자는 특정한 에너지 준위만 가질 수 있으므로, 수소 기체가 방출하는 빛의 스펙트럼은 특정 파장의 선으로만 나타난다.</div></div>
-    <div class="jm"><b>(나)</b><div>완두의 씨 모양은 둥근 것과 주름진 것으로 뚜렷이 구분되며, 그 중간 형태는 나타나지 않는다.</div></div>
-    <div class="jm"><b>(다)</b><div>사람의 키는 여러 쌍의 대립유전자와 환경의 영향을 받으므로, 집단을 조사하면 작은 값부터 큰 값까지 끊김 없이 분포한다.</div></div>
-    <div class="jm"><b>(라)</b><div>함수 <math><mi>f</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math>가 닫힌구간 <math><mo stretchy="false">[</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="false">]</mo></math>에서 연속이고 <math><mi>f</mi><mo stretchy="false">(</mo><mi>a</mi><mo stretchy="false">)</mo><mo>≠</mo><mi>f</mi><mo stretchy="false">(</mo><mi>b</mi><mo stretchy="false">)</mo></math>이면, <math><mi>f</mi><mo stretchy="false">(</mo><mi>a</mi><mo stretchy="false">)</mo></math>와 <math><mi>f</mi><mo stretchy="false">(</mo><mi>b</mi><mo stretchy="false">)</mo></math> 사이의 임의의 값 <math><mi>k</mi></math>에 대하여 <math><mi>f</mi><mo stretchy="false">(</mo><mi>c</mi><mo stretchy="false">)</mo><mo>=</mo><mi>k</mi></math>인 <math><mi>c</mi></math>가 열린구간 <math><mo stretchy="false">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="false">)</mo></math>에 적어도 하나 존재한다.</div></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>제시문 (가), (나)에서 공통으로 떠오르는 개념과 제시문 (다), (라)에서 공통으로 떠오르는 개념을 각각 말하고, 그 이유를 설명하시오.</span></li>
-    <li><span>문항 1에서 답한 두 개념을 이용하여 다음을 설명하시오.
-      <div class="talk">‘사람의 성장은 하루하루 이어지지만, 법은 특정한 나이를 기준으로 성년과 미성년을 나눈다.’</div></span></li>
-    <li><span>어떤 경우에는 문항 1에서 답한 두 개념이 서로 전환되거나 결합된다. 이러한 예를 수학 또는 과학에서 찾고, 그 이유를 설명하시오.</span></li>
-  </ol></div>
-</article>
-
-<!-- 구상지 5 -->
-<article class="sheet two" data-n="5" hidden>
-  <div class="block"><h3>제시문</h3>
-    <div class="jm"><b>(가)</b><div><p class="poem"><span>산에는 꽃 피네 / 꽃이 피네 / 갈 봄 여름 없이 / 꽃이 피네</span><span>(중략)</span><span>산에는 꽃 지네 / 꽃이 지네 / 갈 봄 여름 없이 / 꽃이 지네</span></p><span class="src">김소월, 「산유화」</span></div></div>
-    <div class="jm"><b>(나)</b><div>탄소는 대기의 이산화 탄소, 생물의 유기물, 바다에 녹은 탄산 이온, 지층의 석회암과 화석 연료 등으로 형태를 바꾸며 지구 시스템의 각 권 사이를 이동한다.</div></div>
-    <div class="jm"><b>(다)</b><div>수열 <math><mo stretchy="false">{</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="false">}</mo></math>이 <math><msub><mi>a</mi><mn>1</mn></msub><mo>=</mo><mn>2</mn><mo>,</mo><mspace width="0.5em"/><msub><mi>a</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>−</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac></math> <math><mo stretchy="false">(</mo><mi>n</mi><mo>≥</mo><mn>1</mn><mo stretchy="false">)</mo></math>을 만족시킨다.</div></div>
-    <div class="jm"><b>(라)</b><div>자원을 캐내어 제품을 만들고 쓰고 버리는 방식이 이어지면서 폐플라스틱과 폐배터리가 쌓이고 있다. 한편 어떤 제품은 재활용 과정에서 오히려 많은 에너지를 쓰기도 한다.</div></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>제시문 (가)에서 연상되는 단어를 말하고, 이 단어를 활용하여 제시문 (나)를 설명하시오.</span></li>
-    <li><span>문항 1의 단어와 연관시켜 제시문 (다)의 수열을 설명하고, <math><msub><mi>a</mi><mn>100</mn></msub></math>의 값을 구하시오.</span></li>
-    <li><span>문항 1의 단어와 ‘효율’을 결합하여 제시문 (라)의 사회적 문제를 설명하고, 해결 방안을 함께 제시하시오.</span></li>
-  </ol></div>
-</article>
-
-<!-- 구상지 6 -->
-<article class="sheet two" data-n="6" hidden>
-  <div class="block"><h3>제시문</h3>
-    <div class="jm"><b>(가)</b><div>우라늄 235의 원자핵이 중성자를 흡수하여 분열하면 새로운 중성자가 나오고, 이 중성자가 다른 원자핵을 분열시킨다. 원자력 발전소에서는 제어봉으로 중성자의 수를 조절하여 에너지를 일정하게 얻는다.</div></div>
-    <div class="jm"><b>(나)</b><div>북극의 해빙이 녹으면 태양 복사 에너지를 잘 반사하던 얼음 대신 어두운 바다가 드러난다. 바다가 에너지를 더 많이 흡수하여 수온이 오르면 해빙은 더 빠르게 녹는다.</div></div>
-    <div class="jm"><b>(다)</b><div>첫째항이 양수이고 공비가 양수 <math><mi>r</mi></math>인 등비수열 <math><mo stretchy="false">{</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="false">}</mo></math>이 있다.</div></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>제시문 (가)와 (나)에 나타난 현상의 유사점과 차이점을 설명하고, (가) 또는 (나)로 설명할 수 있는 구체적인 자연현상을 이야기해 보시오.</span></li>
-    <li><span>문항 1에서 답한 유사점과 차이점을 각각 하나의 단어로 표현하고, 두 단어의 관점에서 <math><mi>r</mi></math>의 값에 따른 제시문 (다)의 수열의 변화를 설명하시오.</span></li>
-    <li><span>문항 2의 두 단어를 결합하여 온라인 공간에서 허위 정보가 퍼지는 현상을 설명하고, 대응 방안을 제시하시오.</span></li>
-  </ol></div>
-</article>
-
-<!-- 구상지 7 -->
-<article class="sheet" data-n="7" hidden>
-  <div class="block"><h3>제시어</h3>
-    <div class="words"><span>대칭</span><span>효율</span><span>경계</span><span>전파</span><span>보존</span></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>위에 나열된 단어 중 두 개를 선택하고, 두 단어를 활용하여 설명할 수 있는 연관 개념을 찾아 이유와 함께 설명해 보시오.</span></li>
-    <li><span>문항 1에서 찾은 개념과 같은 원리가 나타나는 예를, 문항 1에서 사용하지 않은 다른 교과(수학 또는 과학)에서 찾아 설명해 보시오.</span></li>
-    <li><span>선택하지 않은 단어 중 하나를 더하여, 문항 1의 개념을 사회현상에 적용해 설명해 보시오.</span></li>
-  </ol></div>
-</article>
-
-<!-- 구상지 8 -->
-<article class="sheet two" data-n="8" hidden>
-  <div class="block"><h3>제시문</h3>
-    <div class="jm"><b>(가)</b><div>금속에 빛을 비출 때 빛의 진동수가 문턱 진동수보다 작으면, 빛의 세기를 아무리 크게 하여도 광전자가 방출되지 않는다.</div></div>
-    <div class="jm"><b>(나)</b><div>뉴런에서는 막전위가 역치에 이르지 못하면 활동 전위가 발생하지 않고, 역치에 이르면 활동 전위가 발생하여 흥분이 전도된다.</div></div>
-    <div class="jm"><b>(다)</b><div>원시별이 중력으로 수축하며 중심부 온도가 약 1000만 K에 이르면 수소 핵융합 반응이 시작되어 주계열성이 된다.</div></div>
-    <div class="jm"><b>(라)</b><div>어떤 감염병에서 감염자 1명은 면역이 없는 집단에서 평균 4명을 감염시킨다. 집단에서 면역을 가진 사람의 비율을 <math><mi>p</mi></math>라 하자. (단, <math><mn>0</mn><mo>≤</mo><mi>p</mi><mo>≤</mo><mn>1</mn></math>)</div></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>제시문 (가)~(다)에서 공통으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.</span></li>
-    <li><span>문항 1에서 답한 개념을 넘어섰을 때 긍정적으로 작용하는 경우와 부정적으로 작용하는 경우를 자연현상에서 찾아 각각 설명하시오.</span></li>
-    <li><span>문항 1의 개념과 ‘전파’를 결합하여 제시문 (라)의 상황을 설명하고, 감염병의 확산이 줄어들기 위한 <math><mi>p</mi></math>의 값의 범위를 구하시오.</span></li>
-  </ol></div>
-</article>
-
-<!-- 구상지 9 -->
-<article class="sheet two" data-n="9" hidden>
-  <div class="block"><h3>제시문</h3>
-    <div class="jm"><b>(가)</b><div>물체의 질량이 일정할 때 물체에 작용하는 알짜힘을 2배로 하면 물체의 가속도도 2배가 된다.</div></div>
-    <div class="jm"><b>(나)</b><div>묽은 염산과 수산화 나트륨 수용액을 섞으면 수소 이온과 수산화 이온이 1 : 1의 몰수비로 반응하여 물이 생성된다.</div></div>
-    <div class="jm"><b>(다)</b><div>흡연자는 비흡연자보다 폐암에 걸릴 확률이 높다. 그러나 모든 흡연자가 폐암에 걸리는 것은 아니며, 비흡연자 중에도 폐암 환자가 있다.</div></div>
-    <div class="jm"><b>(라)</b><div>크기가 <math><mi>n</mi></math>인 표본을 뽑아 모평균의 신뢰도 95 %의 신뢰구간을 구하는 일을 반복하면, 구한 신뢰구간들 중 약 95 %가 모평균을 포함한다.</div></div>
-  </div>
-  <div class="block"><h3>문항</h3><ol class="qs">
-    <li><span>제시문 (가), (나)에서 공통으로 떠오르는 개념과 제시문 (다), (라)에서 공통으로 떠오르는 개념을 각각 말하고, 대비하여 설명하시오.</span></li>
-    <li><span>아래 대화를 문항 1에서 답한 개념의 관점에서 논하시오.
-      <div class="talk"><span>민정: 잠을 충분히 못 잔 날에는 시험을 못 보는 경우가 많더라.</span><span>지훈: 이번 시험 못 봤구나. 어제 잠을 충분히 못 잤겠네.</span></div></span></li>
-    <li><span>문항 1의 두 개념이 하나의 현상 안에 결합되어 나타나는 예를 자연현상에서 찾고, 그 이유를 설명하시오.</span></li>
-  </ol></div>
-</article>
-
+  <div class="wide">
+    <div id="sheet"></div>
+    <div id="after" hidden></div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script>
-(function(){
-  var SECONDS = 300;            // 구상·발표 시간(초). 바꾸려면 이 값만 수정
-  var TOTAL = 9;
-  var $ = function(id){return document.getElementById(id)};
-  var S = {n:0, phase:null, remain:0, endAt:0, paused:false, timer:null, armed:0, lastPick:0};
-  var audio = null, wake = null;
+/* Apps Script 웹 앱 주소. 비워 두면 이 기기 안에서만 동작합니다 */
+const SYNC = "";
+const SECONDS = 300;           // 구상·발표 시간(초)
+const MAX_LEN = 20;
+const KEY = "ku5min_v1";
+const BANK = [{"id":"1","type":"공통 개념","jm":["혈당량이 높아지면 이자에서 인슐린 분비가 늘어 혈당량을 낮추고, 혈당량이 낮아지면 글루카곤 분비가 늘어 혈당량을 높인다.","주계열성의 내부에서는 별을 수축시키려는 중력과 팽창시키려는 기체의 압력 차에 의한 힘이 서로 맞서므로, 별은 오랜 기간 일정한 크기를 유지한다.","상품 가격이 균형 가격보다 높으면 초과 공급이 생겨 가격이 내려가고, 균형 가격보다 낮으면 초과 수요가 생겨 가격이 올라간다.","수열 $\\{a_n\\}$이 $a_1=10,\\ a_{n+1}=\\dfrac{1}{2}a_n+1\\ (n\\ge 1)$을 만족시킨다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1에서 답한 개념의 관점에서 제시문 (라)의 수열을 설명하시오.","문항 1에서 답한 개념과 ‘임계’를 결합하여 설명할 수 있는 현상을 자연 또는 사회에서 찾고, 그 이유를 설명하시오."]},{"id":"2","type":"제시어 설명","jm":["세포막은 세포의 안과 밖을 나눈다. 산소와 같은 작은 분자는 인지질 층을 직접 통과하지만, 포도당이나 이온은 막단백질을 통해서만 이동한다.","빛이 물에서 공기로 진행할 때, 두 매질이 만나는 면에서 입사각이 임계각보다 크면 빛은 공기로 나가지 못하고 모두 반사된다.","함수 $f(x)=|x^2-1|$은 실수 전체의 집합에서 연속이다.","동영상 플랫폼은 이용 기록을 분석하여 이용자가 좋아할 만한 영상을 골라 보여 준다. 이용자는 원하는 정보를 빠르게 얻지만, 자신과 다른 생각을 접할 기회는 줄어들기도 한다."],"qs":["‘경계’라는 단어로 제시문 (가), (나)의 내용을 설명하시오.","‘경계’의 관점에서 제시문 (다)의 함수가 미분가능하지 않은 점을 찾고, 그 이유를 설명하시오.","제시문 (라)에서 떠오르는 개념을 말하고, 이를 ‘경계’와 결합하여 제시문 (라)의 사회적 문제를 설명한 뒤 해결 방안을 제시하시오."]},{"id":"3","type":"두 개념 결합","jm":["국제단위계에서 길이 1 m는 빛이 진공에서 $\\dfrac{1}{299\\,792\\,458}$초 동안 진행한 거리로 정의한다. 이에 따라 어느 나라의 측정값이든 서로 비교할 수 있다.","평균과 표준편차가 서로 다른 두 시험의 점수도 $Z=\\dfrac{X-m}{\\sigma}$로 바꾸면 하나의 잣대로 비교할 수 있다.","19세기 아일랜드는 몇몇 감자 품종에 크게 의존하고 있었는데, 감자 역병이 번지자 수확이 급감하여 대기근을 겪었다.","같은 탄소 원자로 이루어져 있어도 다이아몬드, 흑연, 풀러렌, 탄소 나노튜브는 원자의 배열이 달라 단단함과 전기 전도성이 서로 다르다."],"qs":["제시문 (가), (나)에서 공통으로 연상되는 개념을 제시하고, 그 이유를 설명하시오.","제시문 (다), (라)에서 공통으로 연상되는 개념을 제시하고, 문항 1의 개념과 대비하여 설명하시오.","문항 1의 개념과 문항 2의 개념이 결합될 때 발생할 수 있는 긍정적인 사례와 부정적인 사례를 각각 찾아 설명하시오."]},{"id":"4","type":"두 개념 전환","jm":["수소 원자의 전자는 특정한 에너지 준위만 가질 수 있으므로, 수소 기체가 방출하는 빛의 스펙트럼은 특정 파장의 선으로만 나타난다.","완두의 씨 모양은 둥근 것과 주름진 것으로 뚜렷이 구분되며, 그 중간 형태는 나타나지 않는다.","사람의 키는 여러 쌍의 대립유전자와 환경의 영향을 받으므로, 집단을 조사하면 작은 값부터 큰 값까지 끊김 없이 분포한다.","함수 $f(x)$가 닫힌구간 $[a,b]$에서 연속이고 $f(a)\\ne f(b)$이면, $f(a)$와 $f(b)$ 사이의 임의의 값 $k$에 대하여 $f(c)=k$인 $c$가 열린구간 $(a,b)$에 적어도 하나 존재한다."],"qs":["제시문 (가), (나)에서 공통으로 떠오르는 개념과 제시문 (다), (라)에서 공통으로 떠오르는 개념을 각각 말하고, 그 이유를 설명하시오.","문항 1에서 답한 두 개념을 이용하여 다음을 설명하시오.\n>‘사람의 성장은 하루하루 이어지지만, 법은 특정한 나이를 기준으로 성년과 미성년을 나눈다.’","어떤 경우에는 문항 1에서 답한 두 개념이 서로 전환되거나 결합된다. 이러한 예를 수학 또는 과학에서 찾고, 그 이유를 설명하시오."]},{"id":"5","type":"문학 연상","jm":["산에는 꽃 피네 / 꽃이 피네 / 갈 봄 여름 없이 / 꽃이 피네\n(중략)\n산에는 꽃 지네 / 꽃이 지네 / 갈 봄 여름 없이 / 꽃이 지네\n— 김소월, 「산유화」","탄소는 대기의 이산화 탄소, 생물의 유기물, 바다에 녹은 탄산 이온, 지층의 석회암과 화석 연료 등으로 형태를 바꾸며 지구 시스템의 각 권 사이를 이동한다.","수열 $\\{a_n\\}$이 $a_1=2,\\ a_{n+1}=\\dfrac{1}{1-a_n}\\ (n\\ge 1)$을 만족시킨다.","자원을 캐내어 제품을 만들고 쓰고 버리는 방식이 이어지면서 폐플라스틱과 폐배터리가 쌓이고 있다. 한편 어떤 제품은 재활용 과정에서 오히려 많은 에너지를 쓰기도 한다."],"qs":["제시문 (가)에서 연상되는 단어를 말하고, 이 단어를 활용하여 제시문 (나)를 설명하시오.","문항 1의 단어와 연관시켜 제시문 (다)의 수열을 설명하고, $a_{100}$의 값을 구하시오.","문항 1의 단어와 ‘효율’을 결합하여 제시문 (라)의 사회적 문제를 설명하고, 해결 방안을 함께 제시하시오."]},{"id":"6","type":"유사점·차이점","jm":["우라늄 235의 원자핵이 중성자를 흡수하여 분열하면 새로운 중성자가 나오고, 이 중성자가 다른 원자핵을 분열시킨다. 원자력 발전소에서는 제어봉으로 중성자의 수를 조절하여 에너지를 일정하게 얻는다.","북극의 해빙이 녹으면 태양 복사 에너지를 잘 반사하던 얼음 대신 어두운 바다가 드러난다. 바다가 에너지를 더 많이 흡수하여 수온이 오르면 해빙은 더 빠르게 녹는다.","첫째항이 양수이고 공비가 양수 $r$인 등비수열 $\\{a_n\\}$이 있다."],"qs":["제시문 (가)와 (나)에 나타난 현상의 유사점과 차이점을 설명하고, (가) 또는 (나)로 설명할 수 있는 구체적인 자연현상을 이야기해 보시오.","문항 1에서 답한 유사점과 차이점을 각각 하나의 단어로 표현하고, 두 단어의 관점에서 $r$의 값에 따른 제시문 (다)의 수열의 변화를 설명하시오.","문항 2의 두 단어를 결합하여 온라인 공간에서 허위 정보가 퍼지는 현상을 설명하고, 대응 방안을 제시하시오."]},{"id":"7","type":"단어 선택","words":"대칭, 효율, 경계, 전파, 보존","jm":[],"qs":["위에 나열된 단어 중 두 개를 선택하고, 두 단어를 활용하여 설명할 수 있는 연관 개념을 찾아 이유와 함께 설명해 보시오.","문항 1에서 찾은 개념과 같은 원리가 나타나는 예를, 문항 1에서 사용하지 않은 다른 교과(수학 또는 과학)에서 찾아 설명해 보시오.","선택하지 않은 단어 중 하나를 더하여, 문항 1의 개념을 사회현상에 적용해 설명해 보시오."]},{"id":"8","type":"공통 개념","jm":["금속에 빛을 비출 때 빛의 진동수가 문턱 진동수보다 작으면, 빛의 세기를 아무리 크게 하여도 광전자가 방출되지 않는다.","뉴런에서는 막전위가 역치에 이르지 못하면 활동 전위가 발생하지 않고, 역치에 이르면 활동 전위가 발생하여 흥분이 전도된다.","원시별이 중력으로 수축하며 중심부 온도가 약 1000만 K에 이르면 수소 핵융합 반응이 시작되어 주계열성이 된다.","어떤 감염병에서 감염자 1명은 면역이 없는 집단에서 평균 4명을 감염시킨다. 집단에서 면역을 가진 사람의 비율을 $p$라 하자. (단, $0\\le p\\le 1$)"],"qs":["제시문 (가)~(다)에서 공통으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1에서 답한 개념을 넘어섰을 때 긍정적으로 작용하는 경우와 부정적으로 작용하는 경우를 자연현상에서 찾아 각각 설명하시오.","문항 1의 개념과 ‘전파’를 결합하여 제시문 (라)의 상황을 설명하고, 감염병의 확산이 줄어들기 위한 $p$의 값의 범위를 구하시오."]},{"id":"9","type":"논리 대화","jm":["물체의 질량이 일정할 때 물체에 작용하는 알짜힘을 2배로 하면 물체의 가속도도 2배가 된다.","묽은 염산과 수산화 나트륨 수용액을 섞으면 수소 이온과 수산화 이온이 1 : 1의 몰수비로 반응하여 물이 생성된다.","흡연자는 비흡연자보다 폐암에 걸릴 확률이 높다. 그러나 모든 흡연자가 폐암에 걸리는 것은 아니며, 비흡연자 중에도 폐암 환자가 있다.","크기가 $n$인 표본을 뽑아 모평균의 신뢰도 95 %의 신뢰구간을 구하는 일을 반복하면, 구한 신뢰구간들 중 약 95 %가 모평균을 포함한다."],"qs":["제시문 (가), (나)에서 공통으로 떠오르는 개념과 제시문 (다), (라)에서 공통으로 떠오르는 개념을 각각 말하고, 대비하여 설명하시오.","아래 대화를 문항 1에서 답한 개념의 관점에서 논하시오.\n>민정: 잠을 충분히 못 잔 날에는 시험을 못 보는 경우가 많더라.\n>지훈: 이번 시험 못 봤구나. 어제 잠을 충분히 못 잤겠네.","문항 1의 두 개념이 하나의 현상 안에 결합되어 나타나는 예를 자연현상에서 찾고, 그 이유를 설명하시오."]},{"id":"10","type":"공통 개념","jm":["메테인 분자는 탄소를 중심으로 수소 4개가 정사면체의 꼭짓점 방향에 놓여 있어, 각 결합에 극성이 있어도 분자 전체는 무극성이다.","눈 결정은 물 분자가 규칙적으로 배열되면서 만들어지므로, 모양이 저마다 달라도 대부분 육각형의 틀을 가진다.","대부분의 동물은 몸의 왼쪽과 오른쪽이 거의 같은 형태를 띠어, 한 방향으로 곧게 이동하는 데 유리하다.","함수 $f(x)=x^3-3x$가 있다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1에서 답한 개념을 이용하여 정적분 $\\displaystyle\\int_{-2}^{2}f(x)\\,dx$의 값을 계산 없이 구하고, 그 이유를 설명하시오.","문항 1에서 답한 개념과 ‘효율’을 결합하여 설명할 수 있는 예를 자연 또는 기술에서 찾고, 그 이유를 설명하시오."]},{"id":"11","type":"공통 개념","jm":["물은 염화 수소와 반응할 때는 수소 이온을 받고, 암모니아와 반응할 때는 수소 이온을 내놓는다.","전자는 입자로 알려져 있지만, 전자 현미경에서는 파동처럼 회절하는 성질이 이용된다.","세포막의 인지질은 물과 잘 어울리는 머리 부분과 물을 밀어내는 꼬리 부분을 함께 가진다.","항생제는 많은 감염병 환자를 살려 왔다. 그러나 무분별하게 사용하면 내성 세균이 늘어나 치료가 더 어려워진다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1에서 답한 개념으로 제시문 (라)를 설명하시오.","문항 1에서 답한 개념과 ‘균형’을 결합하여, 제시문 (라)와 같은 문제를 다루는 기준을 제시하고 다른 사회현상에 적용하시오."]},{"id":"12","type":"두 개념 결합","jm":["밀폐된 용기 속의 얼음은 가열하면 물이 되고, 다시 냉각하면 얼음이 된다.","용수철은 탄성 한계 안에서 늘어났을 때 힘을 제거하면 원래 길이로 돌아간다.","달걀을 삶으면 단백질의 구조가 변하여, 식혀도 날달걀로 돌아가지 않는다.","뜨거운 물체와 차가운 물체를 접촉시키면 열은 뜨거운 쪽에서 차가운 쪽으로 이동하며, 저절로 반대로 이동하지는 않는다."],"qs":["제시문 (가), (나)에서 공통으로 떠오르는 개념과 제시문 (다), (라)에서 공통으로 떠오르는 개념을 각각 말하고, 대비하여 설명하시오.","함수 $f(x)=x^2$은 실수 전체의 집합에서 역함수를 갖지 않는다. 문항 1의 두 개념을 이용하여 그 이유를 설명하고, 역함수를 갖도록 만드는 방법을 제시하시오.","문항 1의 두 개념을 결합하여, 사회에서 신중하게 결정해야 할 일과 시도해 볼 수 있는 일을 나누는 기준을 사례와 함께 제시하시오."]},{"id":"13","type":"공통 개념","jm":["소리는 공기와 같은 물질의 진동을 통해 전달되므로, 진공에서는 전달되지 않는다.","뉴런의 축삭 돌기 말단에서 분비된 신경 전달 물질은 시냅스 틈을 건너 다음 뉴런에 흥분을 전달한다.","말라리아 원충은 사람에서 사람으로 직접 옮겨 가지 않고 모기를 통해 전파된다.","곡선 위의 점 $(x,y)$가 실수 $t$에 대하여 $x=2t,\\ y=t^2+1$로 나타난다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1에서 답한 개념의 관점에서 제시문 (라)의 $t$의 역할을 설명하고, $x$와 $y$ 사이의 관계식을 구하시오.","문항 1에서 답한 개념과 ‘신뢰’를 결합하여 화폐, 은행, 온라인 플랫폼 중 하나를 설명하고, 신뢰가 무너질 때의 문제를 제시하시오."]},{"id":"14","type":"공통 개념","jm":["마찰이 없는 궤도를 달리는 물체는 높이가 낮아지면 속력이 커지지만, 위치 에너지와 운동 에너지의 합은 일정하다.","화학 반응이 일어나면 물질의 종류는 바뀌지만, 반응 전후 원자의 종류와 수는 변하지 않는다.","합이 10인 두 양수 $x,\\ y$가 있다. 두 수의 값이 달라져도 합은 그대로이지만, 곱 $xy$는 달라진다."],"qs":["제시문 (가), (나)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1에서 답한 개념의 관점에서 제시문 (다)를 설명하고, $xy$의 최댓값을 구하시오.","에너지는 총량이 일정한데도 사람들은 에너지가 부족하다고 말한다. 문항 1에서 답한 개념과 ‘효율’을 결합하여 그 이유를 설명하고, 해결 방안을 제시하시오."]},{"id":"15","type":"두 개념 결합","jm":["물에 떨어뜨린 잉크는 저어 주지 않아도 시간이 지나면 전체로 퍼져 나간다.","폐포에서 산소는 농도가 높은 쪽에서 낮은 쪽으로 이동하여 모세 혈관으로 들어간다.","성운 속의 기체와 먼지는 중력에 의해 한곳으로 모여 원시별을 만든다.","물 분자 사이에는 수소 결합이 작용하여, 작은 물방울은 둥근 모양을 이룬다."],"qs":["제시문 (가), (나)에서 공통으로 떠오르는 개념과 제시문 (다), (라)에서 공통으로 떠오르는 개념을 각각 말하고, 대비하여 설명하시오.","평균이 같고 표준편차가 다른 두 정규분포의 곡선을 문항 1의 두 개념을 이용하여 비교하여 설명하시오.","문항 1의 두 개념을 결합하여 수도권 인구 집중 현상을 설명하고, 긍정적인 면과 부정적인 면을 각각 제시하시오."]},{"id":"16","type":"두 개념 전환","jm":["저항이 일정한 도선에서 전압을 2배로 하면 전류도 2배가 된다.","등속 직선 운동을 하는 물체의 이동 거리는 걸린 시간에 비례한다.","방사성 동위 원소의 양은 반감기가 지날 때마다 절반으로 줄어든다.","세균이 일정한 시간마다 둘로 분열하면, 세균의 수는 $1,\\ 2,\\ 4,\\ 8,\\ \\cdots$로 늘어난다."],"qs":["제시문 (가), (나)에서 공통으로 떠오르는 개념과 제시문 (다), (라)에서 공통으로 떠오르는 개념을 각각 말하고, 그 이유를 설명하시오.","함수 $y=10x$와 $y=2^x$의 값을 비교하여, $x$가 작을 때와 클 때 두 함수의 차이를 문항 1의 개념으로 설명하시오.","어떤 현상은 처음에는 문항 1의 한 개념처럼 보이다가 나중에는 다른 개념처럼 나타난다. 이러한 예를 자연 또는 사회에서 찾고, 이를 잘못 판단할 때의 위험을 설명하시오."]},{"id":"17","type":"공통 개념","jm":["버스 안에 앉은 사람에게 옆자리 승객은 정지해 있지만, 길가에 선 사람에게 그 승객은 움직이고 있다.","같은 물체의 무게는 달에서 지구의 약 $\\dfrac{1}{6}$이지만, 질량은 달라지지 않는다.","머리를 쓰다듬는 행동이 어떤 사회에서는 친근함의 표현이지만, 다른 사회에서는 무례한 행동으로 받아들여진다.","특수 상대성 이론에 따르면 시간의 흐름은 관찰자에 따라 다를 수 있지만, 진공에서 빛의 속력은 모든 관성계에서 같다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","제시문 (나), (라)에서 조건이 달라져도 변하지 않는 것을 찾고, 문항 1의 개념과 대비하여 설명하시오.","문항 1의 개념과 ‘보편’을 결합하여, 문화의 차이를 존중해야 하는 경우와 보편적 기준을 지켜야 하는 경우를 사례와 함께 구분하시오."]},{"id":"18","type":"두 개념 결합","jm":["콩과 식물의 뿌리혹박테리아는 식물에게 질소 화합물을 제공하고, 식물로부터 양분을 얻는다.","산호는 몸속의 조류가 광합성으로 만든 양분을 얻고, 조류는 산호 안에서 안전한 서식처를 얻는다.","먹이가 같은 두 종의 짚신벌레를 한 공간에서 기르면, 한 종은 늘어나고 다른 종은 사라지기도 한다.","같은 지역에서 같은 먹이를 먹는 두 종의 새는 먹이를 찾는 높이를 달리하며 함께 살아가기도 한다."],"qs":["제시문 (가), (나)에서 공통으로 떠오르는 개념을 말하고, 제시문 (다)에서 떠오르는 개념과 대비하여 설명하시오.","문항 1의 두 개념으로 제시문 (라)를 설명하시오.","문항 1의 두 개념이 동시에 나타나는 사회현상을 찾고, 긍정적인 사례와 부정적인 사례를 각각 설명하시오."]},{"id":"19","type":"두 개념 결합","jm":["원유를 가열하면 끓는점의 차이에 따라 여러 성분으로 나뉘어 얻어진다.","프리즘을 통과한 백색광은 파장에 따라 굴절하는 정도가 달라 여러 색으로 나뉜다.","빨강, 초록, 파랑의 빛을 함께 비추면 눈에는 흰색으로 보인다.","두 함수 $f(x)=x+1,\\ g(x)=2x$에 대하여 $f(g(x))=2x+1$이고 $g(f(x))=2x+2$이다."],"qs":["제시문 (가), (나)에서 공통으로 떠오르는 개념과 제시문 (다), (라)에서 공통으로 떠오르는 개념을 각각 말하고, 그 이유를 설명하시오.","제시문 (라)의 결과가 서로 다른 이유를 설명하고, $f(g(x))$에서 원래의 $x$를 되찾으려면 어떤 순서로 무엇을 해야 하는지 문항 1의 개념으로 설명하시오.","여러 재료를 붙인 포장재는 성능이 좋지만 재활용이 어렵다. 문항 1의 두 개념을 결합하여 그 이유를 설명하고, 해결 방안을 제시하시오."]},{"id":"20","type":"논리 대화","jm":["멘델은 완두를 여러 세대에 걸쳐 교배하고 그 결과를 세어 유전의 규칙을 찾아냈다.","다윈은 여러 지역의 생물을 관찰한 자료를 모아 자연 선택에 의한 진화를 설명하였다.","두 짝수는 $2a,\\ 2b$로 나타낼 수 있고 $2a+2b=2(a+b)$이므로, 두 짝수의 합은 항상 짝수이다.","명제 $P(n)$에 대하여 $P(1)$이 참이고, $P(k)$가 참이면 $P(k+1)$도 참임을 보이면, 모든 자연수 $n$에 대하여 $P(n)$은 참이다."],"qs":["제시문 (가), (나)에서 공통으로 떠오르는 탐구 방법과 제시문 (다)에서 떠오르는 방법을 말하고, 대비하여 설명하시오.","제시문 (라)의 방법은 이름에 ‘귀납’이 들어 있다. 이 방법이 문항 1의 두 방법 중 어디에 가까운지 판단하고 그 이유를 설명하시오.","아래 대화를 문항 1의 개념으로 논하고, 인공지능의 학습에도 같은 한계가 있는지 설명하시오.\n>수아: 우리 반 10명에게 물어보니 모두 이 앱이 좋대.\n>현우: 그럼 전국의 고등학생이 다 좋아하겠네."]},{"id":"21","type":"공통 개념","jm":["양 끝이 고정된 줄에서는 아무 진동이나 유지되지 않고, 특정한 파장의 정상파만 만들어진다.","시조는 3장 6구라는 틀을 지키면서도 시대마다 다양한 내용을 담아 왔다.","실수 $x,\\ y$가 $x\\ge0,\\ y\\ge0,\\ x+y\\le4$를 만족시킨다."],"qs":["제시문 (가), (나)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1에서 답한 개념의 관점에서 제시문 (다)를 설명하고, $x+2y$의 최댓값을 구하시오.","문항 1에서 답한 개념과 ‘자유’를 결합하여, 제약이 오히려 자유나 창의성을 높이는 사례와 지나친 제약이 문제가 되는 사례를 각각 설명하시오."]},{"id":"22","type":"문학 연상","jm":["우리는 만날 때에 떠날 것을 염려하는 것과 같이 떠날 때에 다시 만날 것을 믿습니다.\n아아 님은 갔지마는 나는 님을 보내지 아니하였습니다.\n— 한용운, 「님의 침묵」","거북이보다 뒤에서 출발한 사람은 거북이가 있던 지점에 도착해도 거북이가 조금 앞서 있으므로 영원히 따라잡지 못한다는 주장이 있다. 그러나 실제로는 따라잡는다.","엔진의 연료 효율이 좋아져 비용이 줄면 사람들이 차를 더 많이 타서, 전체 연료 소비량이 오히려 늘어나기도 한다."],"qs":["제시문 (가)의 표현 방식에서 연상되는 단어를 말하고, 그 이유를 설명하시오.","문항 1의 단어로 제시문 (나)를 설명하고, 등비급수 $1+\\dfrac{1}{2}+\\dfrac{1}{4}+\\cdots$의 합을 이용하여 이 주장의 문제점을 밝히시오.","문항 1의 단어와 ‘효율’을 결합하여 제시문 (다)를 설명하고, 이러한 현상을 막기 위한 방안을 제시하시오."]},{"id":"23","type":"문학 연상","jm":["지금 눈 내리고 / 매화 향기 홀로 아득하니 / 내 여기 가난한 노래의 씨를 뿌려라\n다시 천고의 뒤에 / 백마 타고 오는 초인이 있어 / 이 광야에서 목놓아 부르게 하리라\n— 이육사, 「광야」","고생대의 식물이 땅속에 묻힌 뒤 오랜 시간 열과 압력을 받아 석탄이 만들어졌다.","처음 금액 $a$를 연이율 10 %의 복리로 맡기면, $n$년 후의 금액은 $a(1.1)^n$이 된다."],"qs":["제시문 (가)에서 연상되는 단어를 말하고, 이 단어를 활용하여 제시문 (나)를 설명하시오.","문항 1의 단어와 연관시켜 제시문 (다)를 설명하고, 처음의 작은 차이가 시간이 지나면 어떻게 달라지는지 말하시오.","문항 1의 단어와 ‘임계’를 결합하여, 기초 과학 연구나 교육처럼 성과가 늦게 나타나는 분야에 왜 꾸준한 투자가 필요한지 설명하시오."]},{"id":"24","type":"공통 개념","jm":["멀리 있는 별빛의 스펙트럼에서도 지구의 원소와 같은 위치의 선이 나타난다.","박테리아부터 사람까지 거의 모든 생물은 같은 유전 암호를 사용한다.","$(a+b)^2=a^2+2ab+b^2$은 $a,\\ b$에 어떤 실수를 넣어도 성립한다.","세계 인권 선언은 모든 사람이 태어날 때부터 자유롭고 존엄하며 평등하다고 밝힌다."],"qs":["제시문 (가)~(라)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","제시문 (다)의 식과 방정식 $x^2-1=0$의 차이를 문항 1의 개념으로 설명하시오.","문항 1의 개념과 ‘다양성’을 결합하여, 온실가스 감축처럼 모든 나라가 참여해야 하는 문제에서 나라마다 다른 사정을 어떻게 고려할지 설명하시오."]},{"id":"25","type":"공통 개념","jm":["마이크는 소리의 진동을 전기 신호로 바꾸고, 스피커는 전기 신호를 다시 소리로 바꾼다.","망막의 시각 세포는 빛 자극을 받아 전기 신호를 만들어 뇌로 보낸다.","DNA의 유전 정보는 mRNA로 전사되고, 다시 아미노산 서열로 번역되어 단백질이 만들어진다.","양수 $a,\\ b$에 대하여 $\\log_{10}ab=\\log_{10}a+\\log_{10}b$이다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1의 개념으로 제시문 (라)를 설명하고, 로그를 사용하면 어떤 점이 편리한지 말하시오.","문항 1의 개념과 ‘손실’을 결합하여 번역, 요약, 사진 압축 중 하나를 설명하고, 어디까지 손실을 허용할 수 있는지 판단 기준을 제시하시오."]},{"id":"26","type":"공통 개념","jm":["원자는 최외각 전자가 부족할 때 다른 원자와 전자를 공유하여 안정한 전자 배치를 이룬다.","제1형 당뇨병 환자는 인슐린이 부족하므로 외부에서 인슐린을 주사한다.","물이 부족한 지역에서는 바닷물의 염분을 제거하여 마실 물을 얻기도 한다.","동전 3개를 던질 때 ‘적어도 1개는 앞면이 나올 확률’은 ‘모두 뒷면이 나올 확률’을 이용하여 구할 수 있다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1의 개념과 연관시켜 제시문 (라)의 확률을 구하고, 왜 이런 방법을 쓰는지 설명하시오.","문항 1의 개념과 ‘대체’를 결합하여 농촌의 일손 부족을 기계로 메우는 일을 설명하고, 대체할 수 있는 것과 없는 것을 구분하시오."]},{"id":"27","type":"제시어 설명","jm":["소음 제거 헤드폰은 주변 소음과 위상이 반대인 소리를 만들어 소음을 줄인다.","비눗방울의 얇은 막에서는 위아래 면에서 반사된 빛이 겹쳐 특정 색이 강하게 보인다.","교감 신경과 부교감 신경은 같은 기관에 반대로 작용하여 심장 박동을 조절한다.","함수 $y=\\sin x$와 $y=\\sin(x+\\pi)$가 있다."],"qs":["‘보강’과 ‘상쇄’라는 단어로 제시문 (가)~(다)의 내용을 설명하시오.","제시문 (라)의 두 함수의 합을 구하고, 그 결과를 문항 1의 단어로 설명하시오. 또한 $y=\\sin x+\\sin x$와 비교하시오.","문항 1의 단어와 ‘임계’를 결합하여 설명할 수 있는 현상을 자연 또는 사회에서 찾고, 그 이유를 설명하시오."]},{"id":"28","type":"공통 개념","jm":["달리던 버스가 갑자기 멈추면 승객의 몸은 앞으로 쏠린다.","코일에 자석을 가까이 하면, 자기 선속의 변화를 방해하는 방향으로 유도 전류가 흐른다.","혈액은 산성 물질이 조금 들어와도 pH가 크게 변하지 않는다.","필름 카메라로 큰 성공을 거둔 기업이 디지털 기술을 먼저 개발하고도 기존 사업을 고수하다가 시장을 잃었다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","시각 $t$에서 물체의 위치가 $x=3t+2$일 때와 $x=t^2$일 때를 비교하여, 문항 1의 개념을 속도와 가속도로 설명하시오.","문항 1의 개념과 ‘혁신’을 결합하여 제시문 (라)를 설명하고, 사회나 조직이 변화에 대응하는 방안을 제시하시오."]},{"id":"29","type":"공통 개념","jm":["세포는 크기가 커질수록 부피에 비해 표면적이 작아져 물질 교환이 어려워지므로, 일정한 크기가 되면 분열한다.","사막여우는 몸에 비해 귀가 커서 열을 잘 내보내고, 북극여우는 귀가 작아 열 손실이 적다.","정육면체의 한 모서리의 길이가 $k$배가 되면, 겉넓이는 $k^2$배, 부피는 $k^3$배가 된다."],"qs":["제시문 (가), (나)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","문항 1의 개념으로 제시문 (다)를 설명하고, 부피에 대한 겉넓이의 비가 $k$에 따라 어떻게 달라지는지 말하시오.","문항 1의 개념과 ‘효율’을 결합하여, 크기가 커질수록 유리한 사회 시스템과 불리해지는 사회 시스템을 각각 찾아 설명하시오."]},{"id":"30","type":"논리 대화","jm":["18족 원소는 전자 배치가 안정하여 다른 원소와 거의 반응하지 않는다.","두 손전등의 빛은 서로 교차한 뒤에도 각자의 경로로 그대로 나아간다.","두 사건 $A,\\ B$에 대하여 $P(A\\cap B)=P(A)P(B)$이면, $A$와 $B$는 서로 독립이다."],"qs":["제시문 (가)~(다)를 읽고 공통적으로 떠오르는 개념을 말하고, 그 이유를 설명하시오.","아래 대화를 문항 1의 개념으로 논하시오.\n>지호: 동전이 다섯 번 연속 앞면이 나왔어.\n>유나: 그러면 이번에는 뒷면이 나올 확률이 더 높겠네.","문항 1의 개념과 ‘연결’을 결합하여, 온라인으로 연결되어 있어도 외로움을 느끼는 현상을 설명하고 해결 방안을 제시하시오."]}];
 
-  function show(view){
-    $('home').hidden = view!=='home';
-    $('gate').hidden = view!=='gate';
-    $('run').hidden  = view!=='run';
-    window.scrollTo(0,0);
-  }
-  function fmt(ms){
-    var s = Math.max(0,Math.ceil(ms/1000));
-    var m = Math.floor(s/60); s = s%60;
-    return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
-  }
-  function ensureAudio(){
-    try{
-      var C = window.AudioContext||window.webkitAudioContext;
-      if(!audio && C) audio = new C();
-      if(audio && audio.state==='suspended') audio.resume();
-    }catch(e){}
-  }
-  function beep(times){
-    if(!audio) return;
-    try{
-      for(var i=0;i<times;i++){
-        var t = audio.currentTime+i*.42, o = audio.createOscillator(), g = audio.createGain();
-        o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
-        g.gain.setValueAtTime(.0001,t);
-        g.gain.exponentialRampToValueAtTime(.35,t+.02);
-        g.gain.exponentialRampToValueAtTime(.0001,t+.3);
-        o.start(t); o.stop(t+.32);
-      }
-    }catch(e){}
-  }
-  function keepAwake(on){
-    if(!('wakeLock' in navigator)) return;
-    try{
-      if(on && !wake && document.visibilityState==='visible'){
-        navigator.wakeLock.request('screen').then(function(l){wake=l; l.addEventListener('release',function(){wake=null})}).catch(function(){});
-      }else if(!on && wake){ wake.release().catch(function(){}); wake=null; }
-    }catch(e){}
-  }
-  function paint(){
-    var label = {think:'구상 시간', speak:'발표 시간', done:'끝'}[S.phase];
-    var running = S.phase==='think'||S.phase==='speak';
-    document.body.dataset.phase = S.phase;
-    document.body.dataset.paused = S.paused?'1':'0';
-    document.body.dataset.last = (running && S.remain<=60000)?'1':'0';
-    $('phase').textContent = S.paused?'일시정지':label;
-    $('time').textContent = fmt(S.remain);
-    $('fill').style.transform = 'scaleX('+(S.remain/(SECONDS*1000))+')';
-    document.title = running ? fmt(S.remain)+' '+label : '5분 구상 발표';
-    $('pause').hidden = !running;
-    $('pause').textContent = S.paused?'계속':'일시정지';
-    $('skip').hidden = !running;
-    $('skip').textContent = S.phase==='think'?'바로 발표':'발표 끝';
-    $('again').hidden = running;
-    $('next').hidden = running;
-  }
-  function stop(){ clearInterval(S.timer); S.timer=null; keepAwake(false); }
-  function setPhase(p){
-    S.phase = p; S.paused = false;
-    S.remain = p==='done' ? 0 : SECONDS*1000;
-    S.endAt = Date.now()+S.remain;
-    if(p==='done') stop();
-    paint();
-  }
-  function tick(){
-    if(S.paused) return;
-    S.remain = S.endAt-Date.now();
-    if(S.remain<=0){
-      if(S.phase==='think'){ beep(2); setPhase('speak'); }
-      else if(S.phase==='speak'){ beep(3); setPhase('done'); }
-      return;
-    }
-    paint();
-  }
-  function run(n){
-    S.n = n;
-    var list = document.querySelectorAll('.sheet');
-    for(var i=0;i<list.length;i++) list[i].hidden = Number(list[i].dataset.n)!==n;
-    $('sheetname').textContent = '구상지 '+n;
-    stop(); show('run');
-    setPhase('think');
-    S.timer = setInterval(tick,200);
-    keepAwake(true);
-  }
-  // 목록이나 버튼에서 누른 경우 바로 시작하고, 링크로 직접 들어온 경우 시작 버튼을 보여 준다
-  function start(n){
-    ensureAudio();
-    S.armed = n;
-    if(location.hash==='#'+n) route(); else location.hash = n;
-  }
-  function route(){
-    var n = parseInt(location.hash.slice(1),10);
-    if(!(n>=1 && n<=TOTAL)){ stop(); document.title='5분 구상 발표'; show('home'); return; }
-    if(S.armed===n){ S.armed=0; run(n); return; }
-    stop(); S.n=n; $('gatename').textContent='구상지 '+n; document.title='구상지 '+n; show('gate');
-  }
-  function pick(){
-    var n; do{ n = 1+Math.floor(Math.random()*TOTAL); }while(n===S.lastPick);
-    S.lastPick = n; return n;
-  }
-  function togglePause(){
-    if(S.phase!=='think'&&S.phase!=='speak') return;
-    S.paused = !S.paused;
-    if(!S.paused) S.endAt = Date.now()+S.remain;
-    paint();
-  }
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = w => String(w).replace(/\s+/g, "").toLowerCase();
+const LABELS = ["가","나","다","라","마"];
 
-  var grid = $('grid');
-  for(var i=1;i<=TOTAL;i++){(function(n){
-    var b = document.createElement('button');
-    b.innerHTML = n===7 ? '구상지 7<small>단어 선택형</small>' : '구상지 '+n;
-    b.onclick = function(){start(n)};
-    grid.appendChild(b);
-  })(i)}
-  $('random').onclick = function(){start(pick())};
-  $('gatestart').onclick = function(){start(S.n)};
-  $('gatehome').onclick = function(){location.hash=''};
-  $('home2').onclick = function(){location.hash=''};
-  $('pause').onclick = togglePause;
-  $('skip').onclick = function(){ if(S.phase==='think') setPhase('speak'); else setPhase('done'); };
-  $('again').onclick = function(){start(S.n)};
-  $('next').onclick = function(){start(S.n%TOTAL+1)};
-  document.addEventListener('keydown',function(e){
-    if(e.code==='Space' && e.target.tagName!=='BUTTON' && !$('run').hidden){ e.preventDefault(); togglePause(); }
-  });
-  document.addEventListener('visibilitychange',function(){
-    if(document.visibilityState==='visible' && S.timer) keepAwake(true);
-  });
-  window.addEventListener('hashchange',route);
+let D = {name:"", code:"", dev:"", problems:null, stats:{}, me:{}, queue:[], last:""};
+try { D = Object.assign(D, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+const store = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
+if (!D.dev) { D.dev = Math.random().toString(36).slice(2, 10); store(); }   // 같은 기기에서 쓴 답을 묶어 보기 위한 표시
+
+const S = {id:"", phase:null, remain:0, endAt:0, paused:false, timer:null, armed:"", review:false, editing:false, draft:""};
+const V = {view:"list", sort:"num", msg:"", err:false, busy:false};
+let audio = null, wake = null;
+
+const probs = () => D.problems && D.problems.length ? D.problems : BANK;
+const prob = id => probs().find(p => String(p.id) === String(id));
+const mine = id => D.me[id] || {kw:[], vote:""};
+const online = () => !!(SYNC && D.name);
+
+function statOf(id) {
+  if (SYNC) return D.stats[id] || {good:0, mid:0, bad:0, n:0, kw:[]};
+  const m = mine(id), one = v => m.vote === v ? 1 : 0;   // 시트 없이 쓸 때는 내 기록만 보여 준다
+  return {good:one("good"), mid:one("mid"), bad:one("bad"), n:m.kw.length?1:0, kw:m.kw.map(w => ({w, c:1, who:[]}))};
+}
+
+/* ---- 서버 ---- */
+async function call(body) {
+  const r = await fetch(SYNC, {method:"POST", body:JSON.stringify(body), credentials:"omit", redirect:"follow"});
+  return r.json();
+}
+function hhmm() { const d = new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+async function pull(name=D.name, code=D.code) {
+  if (!SYNC) return {ok:true};
+  V.busy = true; renderSync(); renderLogin();
+  try {
+    await flush();
+    const j = await call({action:"init", name, code, dev:D.dev});
+    if (j.ok) {
+      D.problems = j.problems; D.stats = j.stats; D.me = j.me || {}; D.name = name; D.code = code; D.last = hhmm();
+      store(); V.msg = ""; V.err = false;
+    } else { V.msg = {code:"이름은 있는데 코드가 다릅니다", list:"명단에 없는 이름입니다. 선생님께 확인해 주세요"}[j.error] || "연결 실패. 다시 시도해 주세요"; V.err = true; }
+    return j;
+  } catch (e) { V.msg = "연결 실패. 다시 시도해 주세요"; V.err = true; return {ok:false}; }
+  finally { V.busy = false; renderLogin(); renderAll(); }
+}
+async function flush() {
+  while (D.queue.length) {
+    const j = await call(D.queue[0]);
+    if (!j.ok) break;
+    D.queue.shift(); store();
+  }
+}
+async function save(id, patch) {
+  D.me[id] = Object.assign({kw:[], vote:""}, D.me[id], patch);
+  store();
+  if (!online()) return;
+  const body = Object.assign({action:"save", name:D.name, code:D.code, dev:D.dev, id}, patch);
+  try {
+    await flush();
+    const j = await call(body);
+    if (j.ok) { D.stats[id] = j.stat; store(); }
+    else throw 0;
+  } catch (e) { D.queue.push(body); store(); }
+  renderAfter(); if (!$("home").hidden) render();
+}
+
+/* ---- 로그인 ---- */
+function renderLogin() {
+  $("lg-go").textContent = V.busy ? "확인중" : "들어가기";
+  $("lg-go").disabled = V.busy;
+  $("lg-msg").textContent = V.msg;
+}
+function logout() {
+  D.name = ""; D.code = ""; D.last = "";
+  if (SYNC) D.me = {};
+  store(); V.msg = ""; V.err = false;
+  $("lg-name").value = ""; $("lg-code").value = "";
   route();
-})();
+}
+$("lg-form").onsubmit = async e => {
+  e.preventDefault();
+  const n = $("lg-name").value.trim(), c = $("lg-code").value.trim();
+  if (!n || !c) { V.msg = "이름과 코드를 모두 넣어 주세요"; renderLogin(); return; }
+  if (!SYNC) { D.name = n; D.code = c; store(); V.msg = ""; route(); return; }
+  V.msg = "";
+  const j = await pull(n, c);
+  if (j.ok) route(); else renderLogin();
+};
+function renderSync() {
+  const el = $("sync");
+  if (!D.name) { el.innerHTML = ""; return; }
+  const info = !SYNC ? "이 기기에만 저장됩니다" : V.err ? esc(V.msg) : V.busy ? "불러오는 중" : "연결됨"+(D.last?` (${D.last})`:"");
+  el.innerHTML = `<span class="st${V.err?" err":""}"><b>${esc(D.name)}</b> ${info}</span><span class="bt">${SYNC?'<button id="sy-re">새로고침</button>':""}<button id="sy-out">나가기</button></span>`;
+  if ($("sy-re")) $("sy-re").onclick = () => pull();
+  $("sy-out").onclick = logout;
+}
+
+/* ---- 목록 ---- */
+function tile(p) {
+  const st = statOf(p.id), done = (mine(p.id).kw||[]).length;
+  const num = (v, c) => `<span class="n ${v?c:"z"}">${v}</span>`;
+  return `<button class="tile" data-id="${esc(p.id)}"><span class="nm"><b>구상지 ${esc(p.id)}</b><small>${esc(p.type||"")}</small>${done?'<span class="d">✓</span>':""}</span>${num(st.good,"g")}${num(st.mid,"m")}${num(st.bad,"b")}</button>`;
+}
+function sorted(list) {
+  const a = list.slice();
+  if (V.sort === "good") a.sort((x,y) => { const s=statOf(x.id), t=statOf(y.id); return (t.good-t.bad)-(s.good-s.bad); });
+  if (V.sort === "todo") return a.filter(p => !(mine(p.id).kw||[]).length);
+  return a;
+}
+function rankHtml(list, myWords, limit) {
+  if (!list.length) return '<p class="hint">아직 모인 키워드가 없습니다.</p>';
+  const top = list[0].c, set = new Set((myWords||[]).map(norm));
+  return `<ol class="rank">${list.slice(0, limit||30).map(k => `<li class="${set.has(norm(k.w))?"mine":""}"><span class="w" title="${esc(k.w)}">${esc(k.w)}</span><span class="bar"><i style="width:${Math.round(k.c/top*100)}%"></i></span><b>${k.c}</b>${(k.who||[]).length?`<span class="who">${k.who.map(esc).join(", ")}</span>`:""}</li>`).join("")}</ol>`;
+}
+function overall() {
+  const map = {};
+  probs().forEach(p => (statOf(p.id).kw||[]).forEach(k => { const n = norm(k.w); (map[n] || (map[n] = {w:k.w, c:0})).c += k.c; }));
+  return Object.values(map).sort((a,b) => b.c-a.c);
+}
+function render() {
+  const box = $("box"), all = probs();
+  const doneN = all.filter(p => (mine(p.id).kw||[]).length).length;
+  $("topstat").textContent = `${doneN} / ${all.length}`;
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.v === V.view));
+  if (V.view === "kw") {
+    const rows = all.map(p => {
+      const st = statOf(p.id), mk = mine(p.id).kw || [];
+      const txt = !mk.length ? "내 키워드를 내면 공개됩니다"
+        : st.kw.slice(0,3).map(k => `<em>${esc(k.w)}</em> ${k.c}`).join(" · ") || "아직 없음";
+      return `<button class="row" data-id="${esc(p.id)}" data-review="${mk.length?1:""}"><b>구상지 ${esc(p.id)}</b><span>${txt}</span></button>`;
+    }).join("");
+    box.innerHTML = `<div class="panel"><h2>가장 많이 나온 키워드</h2><p class="sub">전체 구상지를 합친 순위입니다.</p>${rankHtml(overall(), [], 15)}</div><div class="panel"><h2>구상지별 키워드</h2>${rows}</div>`;
+  } else {
+    const list = sorted(all);
+    const chips = `<div class="chips" id="chips">${[["num","번호순"],["good","좋은 문제순"],["todo","안 푼 문제"]].map(c => `<button data-s="${c[0]}" class="${V.sort===c[0]?"on":""}">${c[1]}</button>`).join("")}</div>`;
+    const body = list.length ? `<div class="grid"><div class="thead"><span></span><span>좋음</span><span>보통</span><span>별로</span></div>${list.map(tile).join("")}</div>` : '<div class="empty">안 푼 구상지가 없습니다.</div>';
+    box.innerHTML = chips + body + '<button class="go-random" id="random">무작위로 시작</button>';
+    const r = $("random"); if (r) r.onclick = () => start(pick());
+  }
+}
+function renderAll() { renderSync(); if (!$("home").hidden) render(); if (!$("after").hidden) renderAfter(); }
+
+/* ---- 구상지 본문 ---- */
+function mathy(s) {
+  const parts = String(s).split("$");
+  return parts.map((t, i) => {
+    if (i % 2 === 0) return esc(t);
+    if (window.katex) { try { return katex.renderToString(t, {throwOnError:false}); } catch (e) {} }
+    return esc(t);
+  }).join("");
+}
+function rich(s) {
+  return String(s).split("\n").map(l => {
+    if (l.startsWith(">")) return `<div class="talk">${mathy(l.slice(1).trim())}</div>`;
+    if (l.startsWith("—")) return `<div class="src">${mathy(l)}</div>`;
+    return `<div>${mathy(l)}</div>`;
+  }).join("");
+}
+function sheetHtml(p) {
+  const words = p.words ? String(p.words).split(",").map(w => w.trim()).filter(Boolean) : [];
+  const jm = (p.jm||[]).map((t,i) => `<div class="jm"><b>(${LABELS[i]})</b><div>${rich(t)}</div></div>`).join("");
+  const left = words.length && !jm ? "" : `<div class="block"><h3>제시문</h3>${jm}</div>`;
+  const top = words.length ? `<div class="block"><h3>제시어</h3><div class="words">${words.map(w=>`<span>${esc(w)}</span>`).join("")}</div></div>` : "";
+  const qs = `<div class="block"><h3>문항</h3><ol class="qs">${(p.qs||[]).map(q=>`<li><div>${rich(q)}</div></li>`).join("")}</ol></div>`;
+  return `<div class="sheet ${left?"two":""}">${top}${left}${qs}</div>`;
+}
+
+/* ---- 끝난 뒤: 키워드와 평가 ---- */
+function renderAfter() {
+  const el = $("after"), id = S.id;
+  if (el.hidden || !id) return;
+  const was = $("kw-in"), focused = was && document.activeElement === was;
+  if (was) S.draft = was.value;                 // 다시 그려도 쓰던 글자가 지워지지 않게 한다
+  const m = mine(id), st = statOf(id), has = (m.kw||[]).length > 0, done = S.phase === "done";
+  let kw;
+  if (!has || S.editing) {
+    kw = `<div class="block"><h3>이 문제에서 떠오르는 키워드 하나</h3>
+      <form class="kwform" id="kw-form"><input id="kw-in" placeholder="키워드 입력" maxlength="${MAX_LEN}" autocomplete="off" value="${esc(S.draft)}"><button class="act main" type="submit">저장</button></form>
+      <p class="hint">저장하면 발표가 끝난 뒤 서로의 키워드를 볼 수 있습니다.</p></div>`;
+  } else if (!done) {
+    kw = `<div class="block"><div class="line"><h3>내 키워드</h3><button class="act" id="kw-edit">수정</button></div><div class="mykw">${esc(m.kw[0])}</div><p class="hint">발표가 끝나면 서로의 키워드가 공개됩니다.</p></div>`;
+  } else {
+    kw = `<div class="block"><div class="line"><h3>모두의 키워드 (${st.n}명)</h3><button class="act" id="kw-edit">수정</button></div>${rankHtml(st.kw, m.kw)}${SYNC?`<div class="seg"><button id="pub-on" class="${m.pub?"on":""}">내 이름으로 공개</button><button id="pub-off" class="${m.pub?"":"on"}">비공개 유지</button></div><p class="hint">공개를 고르면 내 키워드 옆에 이름이 표시됩니다. 비공개여도 선생님은 시트에서 누가 쓴 답인지 볼 수 있습니다. <button class="link" id="kw-re">새로고침</button></p>`:""}</div>`;
+  }
+  const votes = done ? `<div class="block"><h3>이 문제는 어땠나요?</h3><div class="votes">${[["good","좋음"],["mid","보통"],["bad","별로"]].map(v=>`<button class="${v[0]}${m.vote===v[0]?" on":""}" data-v="${v[0]}">${v[1]} ${st[v[0]]}</button>`).join("")}</div></div>` : "";
+  el.innerHTML = `<div class="after">${kw}${votes}</div>`;
+  const input = $("kw-in");
+  if (input && focused) input.focus();
+  if ($("kw-form")) $("kw-form").onsubmit = async e => {
+    e.preventDefault();
+    const w = $("kw-in").value.replace(/,/g, " ").trim().slice(0, MAX_LEN);
+    if (!w) { $("kw-in").focus(); return; }
+    S.editing = false; S.draft = "";
+    $("kw-in").value = "";
+    await save(id, {kw:[w]}); renderAfter();
+  };
+  if ($("kw-edit")) $("kw-edit").onclick = () => { S.draft = m.kw[0]; S.editing = true; renderAfter(); };
+  if ($("kw-re")) $("kw-re").onclick = () => pull();
+  if ($("pub-on")) $("pub-on").onclick = async () => { await save(id, {pub:true}); renderAfter(); };
+  if ($("pub-off")) $("pub-off").onclick = async () => { await save(id, {pub:false}); renderAfter(); };
+  el.querySelectorAll(".votes button").forEach(b => b.onclick = () => vote(b.dataset.v));
+}
+function vote(v) {
+  const id = S.id, m = mine(id), now = m.vote === v ? "" : v;
+  if (SYNC) {                                  // 응답을 기다리지 않고 숫자를 먼저 바꾼다
+    const st = D.stats[id] || (D.stats[id] = {good:0, mid:0, bad:0, n:0, kw:[]});
+    if (m.vote) st[m.vote]--;
+    if (now) st[now]++;
+  }
+  D.me[id] = Object.assign({kw:[], vote:""}, D.me[id], {vote:now});
+  renderAfter();
+  save(id, {vote:now});
+}
+
+/* ---- 타이머 ---- */
+function show(view) {
+  $("login").hidden = view !== "login"; $("home").hidden = view !== "home"; $("gate").hidden = view !== "gate"; $("run").hidden = view !== "run";
+  window.scrollTo(0, 0);
+}
+function fmt(ms) {
+  let s = Math.max(0, Math.ceil(ms/1000)); const m = Math.floor(s/60); s %= 60;
+  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+function ensureAudio() {
+  try {
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!audio && C) audio = new C();
+    if (audio && audio.state === "suspended") audio.resume();
+  } catch (e) {}
+}
+function beep(times) {
+  if (!audio) return;
+  try {
+    for (let i = 0; i < times; i++) {
+      const t = audio.currentTime + i*.42, o = audio.createOscillator(), g = audio.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
+      g.gain.setValueAtTime(.0001, t);
+      g.gain.exponentialRampToValueAtTime(.35, t+.02);
+      g.gain.exponentialRampToValueAtTime(.0001, t+.3);
+      o.start(t); o.stop(t+.32);
+    }
+  } catch (e) {}
+}
+function keepAwake(on) {
+  if (!("wakeLock" in navigator)) return;
+  try {
+    if (on && !wake && document.visibilityState === "visible") {
+      navigator.wakeLock.request("screen").then(l => { wake = l; l.addEventListener("release", () => { wake = null; }); }).catch(() => {});
+    } else if (!on && wake) { wake.release().catch(() => {}); wake = null; }
+  } catch (e) {}
+}
+function paint() {
+  const label = {think:"구상 시간", speak:"발표 시간", done:"끝"}[S.phase];
+  const running = S.phase === "think" || S.phase === "speak";
+  document.body.dataset.phase = S.phase;
+  document.body.dataset.paused = S.paused ? "1" : "0";
+  document.body.dataset.last = running && S.remain <= 60000 ? "1" : "0";
+  $("phase").textContent = S.paused ? "일시정지" : label;
+  $("time").textContent = fmt(S.remain);
+  $("fill").style.transform = `scaleX(${S.remain/(SECONDS*1000)})`;
+  document.title = running ? `${fmt(S.remain)} ${label}` : "5분 구상 발표";
+  $("pause").hidden = !running;
+  $("pause").textContent = S.paused ? "계속" : "일시정지";
+  $("skip").hidden = !running;
+  $("skip").textContent = S.phase === "think" ? "바로 발표" : "발표 끝";
+  $("again").hidden = running;
+  $("next").hidden = running;
+}
+function stop() { clearInterval(S.timer); S.timer = null; keepAwake(false); }
+function setPhase(p) {
+  S.phase = p; S.paused = false;
+  S.remain = p === "done" ? 0 : SECONDS*1000;
+  S.endAt = Date.now() + S.remain;
+  if (p === "done") stop();
+  paint();
+  renderAfter();
+  if (p === "done") $("after").scrollIntoView({block:"start"});
+}
+function tick() {
+  if (S.paused) return;
+  S.remain = S.endAt - Date.now();
+  if (S.remain <= 0) {
+    if (S.phase === "think") { beep(2); setPhase("speak"); }
+    else if (S.phase === "speak") { beep(3); setPhase("done"); }
+    return;
+  }
+  paint();
+}
+function run(id, review) {
+  const p = prob(id);
+  if (!p) { location.hash = ""; return; }
+  S.id = String(id);
+  $("sheet").innerHTML = sheetHtml(p);
+  $("sheetname").textContent = "구상지 " + id;
+  S.editing = false; S.draft = "";
+  $("after").innerHTML = ""; $("after").hidden = false;
+  stop(); show("run");
+  if (review) { setPhase("done"); return; }
+  setPhase("think");
+  S.timer = setInterval(tick, 200);
+  keepAwake(true);
+}
+function start(id, review) {
+  ensureAudio();
+  S.armed = String(id); S.review = !!review;
+  if (location.hash === "#"+id) route(); else location.hash = id;
+}
+function route() {
+  if (!D.name) { stop(); S.id = ""; document.title = "5분 구상 발표"; $("after").hidden = true; show("login"); renderLogin(); return; }
+  const id = decodeURIComponent(location.hash.slice(1));
+  if (!id || !prob(id)) { stop(); S.id = ""; document.title = "5분 구상 발표"; $("after").hidden = true; show("home"); render(); renderSync(); return; }
+  if (S.armed === id) { S.armed = ""; run(id, S.review); return; }
+  stop(); S.id = id; $("gatename").textContent = "구상지 " + id; document.title = "구상지 " + id; show("gate");
+}
+function pick() {
+  const all = probs(), todo = all.filter(p => !(mine(p.id).kw||[]).length && String(p.id) !== S.id);
+  const pool = todo.length ? todo : all;
+  return pool[Math.floor(Math.random()*pool.length)].id;
+}
+function nextId() {
+  const all = probs(), i = all.findIndex(p => String(p.id) === S.id);
+  return all[(i+1) % all.length].id;
+}
+function togglePause() {
+  if (S.phase !== "think" && S.phase !== "speak") return;
+  S.paused = !S.paused;
+  if (!S.paused) S.endAt = Date.now() + S.remain;
+  paint();
+}
+
+/* ---- 이벤트 ---- */
+$("tabs").onclick = e => { const b = e.target.closest("button"); if (b) { V.view = b.dataset.v; render(); } };
+$("box").onclick = e => {
+  const c = e.target.closest("#chips button"); if (c) { V.sort = c.dataset.s; render(); return; }
+  const b = e.target.closest("[data-id]"); if (b) start(b.dataset.id, !!b.dataset.review);
+};
+$("gatestart").onclick = () => start(S.id);
+$("gatehome").onclick = () => { location.hash = ""; };
+$("home2").onclick = () => { location.hash = ""; };
+$("pause").onclick = togglePause;
+$("skip").onclick = () => setPhase(S.phase === "think" ? "speak" : "done");
+$("again").onclick = () => start(S.id);
+$("next").onclick = () => start(nextId());
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && !["BUTTON","INPUT"].includes(e.target.tagName) && !$("run").hidden) { e.preventDefault(); togglePause(); }
+});
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.timer) keepAwake(true); });
+window.addEventListener("hashchange", route);
+
+route(); renderSync();
+if (SYNC && D.name) pull().then(j => { if (j.error === "code" || j.error === "list") logout(); });
 </script>
 </body>
 </html>
