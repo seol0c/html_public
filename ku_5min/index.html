@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <style>
 :root{--bg:#f4f5f9;--card:#fff;--ink:#1b1e2b;--mut:#6b7186;--line:#e2e5ef;--acc:#3f4bb0;--acc-ink:#fff;--acc2:#0a8aa3;--ok:#1a7f45;--ng:#d03a3a;--gold:#b8860b;--speak:#b4540f;--tint:#eceef8;
+  --ab:calc(env(safe-area-inset-top,0px) + 38px);
   --font:"Noto Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151d;--card:#1c1f2a;--ink:#eceef6;--mut:#9aa0b4;--line:#2b2f3e;--acc:#8a93ea;--acc-ink:#101223;--acc2:#3cc1d9;--ok:#4ade80;--ng:#f87171;--gold:#e6c35c;--speak:#f0a35e;--tint:#262a3a}}
 :root[data-theme="dark"]{--bg:#13151d;--card:#1c1f2a;--ink:#eceef6;--mut:#9aa0b4;--line:#2b2f3e;--acc:#8a93ea;--acc-ink:#101223;--acc2:#3cc1d9;--ok:#4ade80;--ng:#f87171;--gold:#e6c35c;--speak:#f0a35e;--tint:#262a3a}
@@ -19,10 +20,8 @@ button,input{font:inherit;color:inherit}
 button{cursor:pointer;white-space:nowrap}
 button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
 [hidden]{display:none!important}
-.page{max-width:640px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 60px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 0 8px}
-.top h1{margin:0;font-size:17px;font-weight:700;color:var(--mut)}
-.top span{font-size:14px;color:var(--mut);font-variant-numeric:tabular-nums}
+.page{max-width:640px;margin:0 auto;padding:6px max(16px,env(safe-area-inset-left,0px)) calc(40px + env(safe-area-inset-bottom,0px))}
+#appbar{position:sticky;top:0;z-index:6;height:var(--ab);padding:env(safe-area-inset-top,0px) 16px 0;display:flex;align-items:center;background:var(--bg);color:var(--mut);font-size:15px;font-weight:700}
 .sync{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:0 0 10px;font-size:14px;color:var(--mut)}
 .sync b{color:var(--ink)}
 .sync .st{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -72,7 +71,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-o
 .row span em{font-style:normal;color:var(--ink);font-weight:700}
 .row:hover b{color:var(--acc)}
 /* 로그인 */
-#login{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+#login{min-height:calc(100vh - var(--ab));min-height:calc(100dvh - var(--ab));display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .lg{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
 .lg h1{margin:0;font-size:26px;line-height:1.3}
 .lg-sub{margin:0 0 6px;color:var(--mut);font-size:15px}
@@ -82,7 +81,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-o
 .lg .msg:empty{display:none}
 .lg-note{margin:6px 0 0;color:var(--mut);font-size:13.5px;line-height:1.6}
 /* 시작 화면 */
-#gate{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:24px}
+#gate{min-height:calc(100vh - var(--ab));min-height:calc(100dvh - var(--ab));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:24px}
 #gate h2{font-size:clamp(32px,5vw,52px);margin:0;line-height:1.2}
 #gate p{color:var(--mut);margin:0 0 14px}
 #gate .go-random{width:auto;padding:12px 34px;margin:0}
@@ -90,7 +89,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-o
 /* 풀이 화면 */
 #run{font-size:clamp(17px,.55vw + 13px,23px)}
 .wide{max-width:1440px;margin:0 auto;padding-left:clamp(16px,3vw,40px);padding-right:clamp(16px,3vw,40px)}
-#bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+#bar{position:sticky;top:var(--ab);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
 .barin{display:flex;align-items:center;gap:clamp(10px,2vw,24px);padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
 #sheetname{font-weight:700}
 .clock{display:flex;align-items:baseline;gap:12px;margin-right:auto;color:var(--phase)}
@@ -106,7 +105,7 @@ body[data-phase="done"]{--phase:var(--ok)}
 body[data-last="1"]{--phase:var(--ng)}
 body[data-paused="1"] .clock{opacity:.55}
 #after{margin-top:clamp(14px,2.4vh,24px)}
-#sheet{padding-top:clamp(16px,3vh,32px);padding-bottom:40px}
+#sheet{padding-top:clamp(16px,3vh,32px);padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
 .sheet{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(16px,2.6vw,36px)}
 @media (min-width:1000px){.sheet.two{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
 .block{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(16px,2vw,28px)}
@@ -153,9 +152,10 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
 </head>
 <body>
 
+<header id="appbar">ku5min by seol</header>
+
 <section id="login" hidden>
   <form id="lg-form" class="lg">
-    <h1>ku5min by seol</h1>
     <p class="lg-sub">이름과 코드를 넣어야 시작할 수 있습니다.</p>
     <input id="lg-name" placeholder="이름" autocomplete="off" maxlength="20" required>
     <input id="lg-code" placeholder="숫자 코드" inputmode="numeric" autocomplete="off" maxlength="20" required>
@@ -166,7 +166,6 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
 </section>
 
 <div id="home" class="page" hidden>
-  <div class="top"><h1>ku5min by seol</h1><span id="topstat"></span></div>
   <div class="sync" id="sync"></div>
   <div class="tabs" id="tabs">
     <button data-v="list" class="on">구상지</button>
@@ -333,8 +332,6 @@ function overall() {
 }
 function render() {
   const box = $("box"), all = probs();
-  const doneN = all.filter(solved).length;
-  $("topstat").textContent = `${doneN} / ${all.length}`;
   document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.v === V.view));
   if (V.view === "kw") {
     const rows = all.filter(p => !p.nokw).map(p => {
