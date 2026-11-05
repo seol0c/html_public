@@ -174,7 +174,7 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
     <button data-v="kw">키워드</button>
   </div>
   <div id="box"></div>
-  <p class="note">번호를 누르면 제시문과 문항이 바로 나오고 5분 구상이 시작됩니다. 5분 뒤 알림음과 함께 5분 발표로 넘어가고, 끝나면 키워드를 적어 서로의 답을 봅니다. 고려대학교 계열적합전형 자연계열 면접의 기출 형식을 참고해 새로 만든 연습 문제이며, 실제 기출 문항이나 대학 공식 자료가 아닙니다.</p>
+  <p class="note">번호를 누르면 제시문과 문항이 바로 나오고 5분 구상이 시작됩니다. 5분이 지나면 5분 발표로 자동으로 넘어가고, 끝나면 키워드를 적어 서로의 답을 봅니다. 고려대학교 계열적합전형 자연계열 면접의 기출 형식을 참고해 새로 만든 연습 문제이며, 실제 기출 문항이나 대학 공식 자료가 아닙니다.</p>
 </div>
 
 <section id="gate" hidden>
@@ -226,7 +226,7 @@ if (!D.dev) { D.dev = Math.random().toString(36).slice(2, 10); store(); }   // �
 
 const S = {id:"", phase:null, remain:0, endAt:0, paused:false, timer:null, armed:"", review:false, editing:false, draft:"", took:{think:0, speak:0}};
 const V = {view:"list", sort:"num", msg:"", err:false, busy:false};
-let audio = null, wake = null;
+let wake = null;
 
 const probs = () => D.problems && D.problems.length ? D.problems : BANK;
 const prob = id => probs().find(p => String(p.id) === String(id));
@@ -441,26 +441,6 @@ function fmt(ms) {
   let s = Math.max(0, Math.ceil(ms/1000)); const m = Math.floor(s/60); s %= 60;
   return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
 }
-function ensureAudio() {
-  try {
-    const C = window.AudioContext || window.webkitAudioContext;
-    if (!audio && C) audio = new C();
-    if (audio && audio.state === "suspended") audio.resume();
-  } catch (e) {}
-}
-function beep(times) {
-  if (!audio) return;
-  try {
-    for (let i = 0; i < times; i++) {
-      const t = audio.currentTime + i*.42, o = audio.createOscillator(), g = audio.createGain();
-      o.frequency.value = 880; o.connect(g); g.connect(audio.destination);
-      g.gain.setValueAtTime(.0001, t);
-      g.gain.exponentialRampToValueAtTime(.35, t+.02);
-      g.gain.exponentialRampToValueAtTime(.0001, t+.3);
-      o.start(t); o.stop(t+.32);
-    }
-  } catch (e) {}
-}
 function keepAwake(on) {
   if (!("wakeLock" in navigator)) return;
   try {
@@ -506,8 +486,8 @@ function tick() {
   if (S.paused) return;
   S.remain = S.endAt - Date.now();
   if (S.remain <= 0) {
-    if (S.phase === "think") { beep(2); setPhase("speak"); }
-    else if (S.phase === "speak") { beep(3); setPhase("done"); }
+    if (S.phase === "think") setPhase("speak");
+    else if (S.phase === "speak") setPhase("done");
     return;
   }
   paint();
@@ -527,7 +507,6 @@ function run(id, review) {
   keepAwake(true);
 }
 function start(id, review) {
-  ensureAudio();
   S.armed = String(id); S.review = !!review;
   if (location.hash === "#"+id) route(); else location.hash = id;
 }
