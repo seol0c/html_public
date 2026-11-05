@@ -223,13 +223,14 @@ const LABELS = ["가","나","다","라","마"];
 let D = {name:"", code:"", dev:"", problems:null, stats:{}, me:{}, queue:[], last:""};
 try { D = Object.assign(D, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
 const store = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
+delete D.problems;                            // 예전 버전이 저장해 둔 시트 문항은 쓰지 않는다
 if (!D.dev) { D.dev = Math.random().toString(36).slice(2, 10); store(); }   // 같은 기기에서 쓴 답을 묶어 보기 위한 표시
 
 const S = {id:"", phase:null, remain:0, endAt:0, paused:false, timer:null, armed:"", review:false, editing:false, draft:"", took:{think:0, speak:0}};
 const V = {view:"list", sort:"num", msg:"", err:false, busy:false};
 let wake = null;
 
-const probs = () => D.problems && D.problems.length ? D.problems : BANK;
+const probs = () => BANK;                     // 문항은 이 파일이 기준이다. 시트에는 참여자와 기록만 저장한다
 const prob = id => probs().find(p => String(p.id) === String(id));
 const mine = id => D.me[id] || {kw:[], vote:""};
 const online = () => !!(SYNC && D.name);
@@ -254,7 +255,7 @@ async function pull(name=D.name, code=D.code) {
     await flush();
     const j = await call({action:"init", name, code, dev:D.dev});
     if (j.ok) {
-      D.problems = j.problems; D.stats = j.stats; D.me = j.me || {}; D.name = name; D.code = code; D.last = hhmm();
+      D.stats = j.stats || {}; D.me = j.me || {}; D.name = name; D.code = code; D.last = hhmm();
       store(); V.msg = ""; V.err = false;
     } else { V.msg = {code:"이름은 있는데 코드가 다릅니다", list:"명단에 없는 이름입니다. 선생님께 확인해 주세요"}[j.error] || "연결 실패. 다시 시도해 주세요"; V.err = true; }
     return j;
