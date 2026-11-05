@@ -178,9 +178,8 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
 
 <section id="gate" hidden>
   <h2 id="gatename"></h2>
-  <p>시작하면 제시문이 나오고 5분 구상이 바로 시작됩니다.</p>
-  <button class="go-random" id="gatestart">시작</button>
-  <button class="link" id="gatehome">목록으로</button>
+  <button class="go-random" id="gatestart">구상 시작</button>
+  <button class="link" id="gatehome">나가기</button>
 </section>
 
 <div id="run" hidden>
@@ -223,7 +222,7 @@ try { D = Object.assign(D, JSON.parse(localStorage.getItem(KEY) || "{}")); } cat
 const store = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
 if (!D.dev) { D.dev = Math.random().toString(36).slice(2, 10); store(); }   // 같은 기기에서 쓴 답을 묶어 보기 위한 표시
 
-const S = {id:"", phase:null, remain:0, endAt:0, paused:false, timer:null, armed:"", review:false, editing:false, draft:""};
+const S = {id:"", phase:null, remain:0, endAt:0, paused:false, timer:null, armed:"", review:false, editing:false, draft:"", took:{think:0, speak:0}};
 const V = {view:"list", sort:"num", msg:"", err:false, busy:false};
 let audio = null, wake = null;
 
@@ -350,7 +349,7 @@ function render() {
     const chips = `<div class="chips" id="chips">${[["num","번호순"],["good","좋은 문제 순"],["todo","안 푼 문제"]].map(c => `<button data-s="${c[0]}" class="${V.sort===c[0]?"on":""}">${c[1]}</button>`).join("")}<button id="random" class="rand">랜덤시작</button></div>`;
     const body = list.length ? `<div class="grid">${list.map(tile).join("")}</div>` : '<div class="empty">안 푼 구상지가 없습니다.</div>';
     box.innerHTML = chips + body;
-    const r = $("random"); if (r) r.onclick = () => start(pick());
+    const r = $("random"); if (r) r.onclick = () => enter(pick());
   }
 }
 function renderAll() { renderSync(); if (!$("home").hidden) render(); if (!$("after").hidden) renderAfter(); }
@@ -488,6 +487,11 @@ function paint() {
 }
 function stop() { clearInterval(S.timer); S.timer = null; keepAwake(false); }
 function setPhase(p) {
+  const left = Math.max(0, S.paused ? S.remain : S.endAt - Date.now());
+  const used = Math.round((SECONDS*1000 - left) / 1000);   // 일시정지한 시간은 빠진다
+  const finished = S.phase === "speak" && p === "done";
+  if (S.phase === "think" && p === "speak") S.took.think = used;
+  if (finished) S.took.speak = used;
   S.phase = p; S.paused = false;
   S.remain = p === "done" ? 0 : SECONDS*1000;
   S.endAt = Date.now() + S.remain;
@@ -495,6 +499,7 @@ function setPhase(p) {
   paint();
   renderAfter();
   if (p === "done") window.scrollTo(0, 0);
+  if (finished) save(S.id, {think:S.took.think, speak:S.took.speak});
 }
 function tick() {
   if (S.paused) return;
@@ -512,7 +517,7 @@ function run(id, review) {
   S.id = String(id);
   $("sheet").innerHTML = sheetHtml(p);
   $("sheetname").textContent = "구상지 " + id;
-  S.editing = false; S.draft = "";
+  S.editing = false; S.draft = ""; S.phase = null; S.took = {think:0, speak:0};
   $("after").innerHTML = ""; $("after").hidden = true;
   stop(); show("run");
   if (review) { setPhase("done"); return; }
@@ -523,6 +528,10 @@ function run(id, review) {
 function start(id, review) {
   ensureAudio();
   S.armed = String(id); S.review = !!review;
+  if (location.hash === "#"+id) route(); else location.hash = id;
+}
+function enter(id) {                             // 문제에 들어가면 구상 시작 버튼부터 보여 준다
+  S.armed = "";
   if (location.hash === "#"+id) route(); else location.hash = id;
 }
 function route() {
@@ -556,15 +565,16 @@ function togglePause() {
 $("tabs").onclick = e => { const b = e.target.closest("button"); if (b) { V.view = b.dataset.v; render(); } };
 $("box").onclick = e => {
   const c = e.target.closest("#chips button[data-s]"); if (c) { V.sort = c.dataset.s; render(); return; }
-  const b = e.target.closest("[data-id]"); if (b) start(b.dataset.id, !!b.dataset.review);
+  const b = e.target.closest("[data-id]"); if (!b) return;
+  if (b.dataset.review) start(b.dataset.id, true); else enter(b.dataset.id);
 };
 $("gatestart").onclick = () => start(S.id);
 $("gatehome").onclick = () => { location.hash = ""; };
 $("home2").onclick = () => { location.hash = ""; };
 $("pause").onclick = togglePause;
 $("skip").onclick = () => setPhase(S.phase === "think" ? "speak" : "done");
-$("again").onclick = () => start(S.id);
-$("next").onclick = () => start(nextId());
+$("again").onclick = () => enter(S.id);
+$("next").onclick = () => enter(nextId());
 document.addEventListener("keydown", e => {
   if (e.code === "Space" && !["BUTTON","INPUT"].includes(e.target.tagName) && !$("run").hidden) { e.preventDefault(); togglePause(); }
 });
