@@ -258,6 +258,24 @@ function resetProblems() {
   refresh();
 }
 
+/**
+ * 시험 기록을 비우고 새로 시작한다. 편집기에서 resetAll을 고르고 실행한다.
+ * 문항을 이 코드의 문제로 교체하고, 참여자와 기록을 비우고, 기본 탭(시트1)을 지운다.
+ * 명단 탭은 그대로 둔다. 지운 기록은 되돌릴 수 없다.
+ */
+function resetAll() {
+  [[U_SHEET, H_U], [R_SHEET, H_R]].forEach(function (x) {
+    var sh = sheet(x[0], x[1]);
+    if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, sh.getLastColumn()).clearContent();
+  });
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  ['시트1', 'Sheet1'].forEach(function (n) {
+    var x = ss.getSheetByName(n);
+    if (x) ss.deleteSheet(x);
+  });
+  resetProblems();
+}
+
 /** 시트를 열 때 집계를 다시 계산한다 */
 function onOpen() {
   ready();
