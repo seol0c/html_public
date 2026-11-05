@@ -46,7 +46,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-o
 .tile .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .tile .nm b{font-size:16px}
 .tile .nm small{color:var(--mut);font-size:13px;margin-left:6px}
-.tile .nm small.d{color:var(--ok);font-weight:700}
+.tile .nm .d{color:var(--ok);font-weight:700;margin-left:6px}
 .tile .sc{flex:0 0 auto;display:flex;gap:8px;font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums}
 .tile .sc b{font-weight:700}
 .sc .g{color:var(--ok)}.sc .m{color:var(--gold)}.sc .b{color:var(--ng)}
@@ -312,7 +312,7 @@ function renderSync() {
 /* ---- 목록 ---- */
 function tile(p) {
   const st = statOf(p.id), done = solved(p);
-  return `<button class="tile" data-id="${esc(p.id)}"><span class="nm"><b>구상지 ${esc(p.id)}</b>${done?'<small class="d">풀이함</small>':`<small>${esc(p.type||"")}</small>`}</span><span class="sc"><span>좋음 <b class="g">${st.good}</b></span><span>보통 <b class="m">${st.mid}</b></span><span>별로 <b class="b">${st.bad}</b></span></span></button>`;
+  return `<button class="tile" data-id="${esc(p.id)}"><span class="nm"><b>구상지 ${esc(p.id)}</b><small>${esc(p.type||"")}</small>${done?'<span class="d">✓</span>':""}</span><span class="sc"><span>좋음 <b class="g">${st.good}</b></span><span>보통 <b class="m">${st.mid}</b></span><span>별로 <b class="b">${st.bad}</b></span></span></button>`;
 }
 function sorted(list) {
   const a = list.slice();
