@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ku5min by seol</title>
+<title>ku5 by seol</title>
 <meta name="description" content="제시문과 문항을 보고 5분 구상한 뒤 5분 발표하고, 서로의 키워드를 모아 보는 자연계열 제시문 면접 연습">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -89,8 +89,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-o
 /* 풀이 화면 */
 #run{font-size:clamp(17px,.55vw + 13px,23px)}
 .wide{max-width:1440px;margin:0 auto;padding-left:clamp(16px,3vw,40px);padding-right:clamp(16px,3vw,40px)}
-#bar{position:sticky;top:var(--ab);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
-.barin{display:flex;align-items:center;gap:clamp(10px,2vw,24px);padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+body[data-view="run"] #appbar{display:none}
+.brand{padding-top:8px;font-size:15px;line-height:1.4;font-weight:700;color:var(--mut)}
+#bar{padding-top:env(safe-area-inset-top,0px);position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.barin{display:flex;align-items:center;gap:clamp(10px,2vw,24px);padding-top:4px;padding-bottom:10px;flex-wrap:wrap}
 #sheetname{font-weight:700}
 .clock{display:flex;align-items:baseline;gap:12px;margin-right:auto;color:var(--phase)}
 #phase{font-weight:700}
@@ -152,7 +154,7 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
 </head>
 <body>
 
-<header id="appbar">ku5min by seol</header>
+<header id="appbar">ku5 by seol</header>
 
 <section id="login" hidden>
   <form id="lg-form" class="lg">
@@ -183,6 +185,7 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
 
 <div id="run" hidden>
   <header id="bar">
+    <div class="wide brand">ku5 by seol</div>
     <div class="wide barin">
       <span id="sheetname"></span>
       <div class="clock" role="timer" aria-live="off"><span id="phase"></span><span id="time">05:00</span></div>
@@ -430,6 +433,7 @@ function vote(v) {
 
 /* ---- 타이머 ---- */
 function show(view) {
+  document.body.dataset.view = view;
   $("login").hidden = view !== "login"; $("home").hidden = view !== "home"; $("gate").hidden = view !== "gate"; $("run").hidden = view !== "run";
   window.scrollTo(0, 0);
 }
@@ -474,7 +478,7 @@ function paint() {
   $("phase").textContent = S.paused ? "일시정지" : label;
   $("time").textContent = fmt(S.remain);
   $("fill").style.transform = `scaleX(${S.remain/(SECONDS*1000)})`;
-  document.title = running ? `${fmt(S.remain)} ${label}` : "ku5min by seol";
+  document.title = running ? `${fmt(S.remain)} ${label}` : "ku5 by seol";
   $("pause").hidden = !running;
   $("pause").textContent = S.paused ? "계속" : "일시정지";
   $("skip").hidden = !running;
@@ -532,9 +536,9 @@ function enter(id) {                             // 문제에 들어가면 구�
   if (location.hash === "#"+id) route(); else location.hash = id;
 }
 function route() {
-  if (!D.name) { stop(); S.id = ""; document.title = "ku5min by seol"; $("after").hidden = true; show("login"); renderLogin(); return; }
+  if (!D.name) { stop(); S.id = ""; document.title = "ku5 by seol"; $("after").hidden = true; show("login"); renderLogin(); return; }
   const id = decodeURIComponent(location.hash.slice(1));
-  if (!id || !prob(id)) { stop(); S.id = ""; document.title = "ku5min by seol"; $("after").hidden = true; show("home"); render(); renderSync(); return; }
+  if (!id || !prob(id)) { stop(); S.id = ""; document.title = "ku5 by seol"; $("after").hidden = true; show("home"); render(); renderSync(); return; }
   if (S.armed === id) { S.armed = ""; run(id, S.review); return; }
   stop(); S.id = id; $("gatename").textContent = "구상지 " + id; document.title = "구상지 " + id; show("gate");
 }
