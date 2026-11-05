@@ -38,20 +38,18 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-o
 .tabs button{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 4px;font-weight:700;font-size:15px}
 .tabs button.on{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
 .chips{display:flex;gap:6px;margin:0 0 12px}
-.chips button{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--mut);border-radius:10px;padding:7px 2px;font-size:14px}
+.chips button{flex:1 1 auto;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--mut);border-radius:10px;padding:7px 3px;font-size:13.5px}
 .chips button.on{border-color:var(--acc);color:var(--acc);font-weight:700}
+.chips .rand{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
 .grid{display:flex;flex-direction:column;gap:8px}
-.tile,.thead{display:grid;grid-template-columns:minmax(0,1fr) 2.3em 2.3em 2.3em;align-items:center;gap:2px;width:100%;padding:11px 14px;text-align:left;line-height:1.35}
-.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;white-space:nowrap}
+.tile{display:flex;align-items:center;gap:8px;width:100%;padding:11px 14px;text-align:left;line-height:1.35;background:var(--card);border:1px solid var(--line);border-radius:12px;white-space:nowrap}
 .tile:hover{border-color:var(--acc)}
-.tile .nm{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.tile .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .tile .nm b{font-size:16px}
 .tile .nm small{color:var(--mut);font-size:13px;margin-left:6px}
 .tile .nm .d{color:var(--ok);font-weight:700;margin-left:6px}
-.tile .n,.thead span{text-align:center;font-variant-numeric:tabular-nums}
-.tile .n{font-size:15px;font-weight:700}
-.thead{padding-top:0;padding-bottom:0;margin-bottom:-4px;font-size:12px;color:var(--mut)}
-.n.g{color:var(--ok)}.n.m{color:var(--acc2)}.n.b{color:var(--ng)}.n.z{color:var(--line)}
+.tile .sc{flex:0 0 auto;display:flex;gap:8px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.sc .g{color:var(--ok)}.sc .m{color:var(--gold)}.sc .b{color:var(--ng)}
 .go-random{width:100%;margin-top:12px;border:2px solid var(--acc);border-radius:10px;background:var(--acc);color:var(--acc-ink);font-weight:700;padding:12px}
 .empty{padding:30px 10px;text-align:center;color:var(--mut)}
 .note{color:var(--mut);font-size:13px;margin-top:20px}
@@ -106,8 +104,8 @@ body[data-phase="speak"]{--phase:var(--speak)}
 body[data-phase="done"]{--phase:var(--ok)}
 body[data-last="1"]{--phase:var(--ng)}
 body[data-paused="1"] .clock{opacity:.55}
-#after{margin-top:clamp(14px,2.6vw,36px);padding-bottom:40px}
-#sheet{padding-top:clamp(16px,3vh,32px)}
+#after{margin-top:clamp(14px,2.4vh,24px)}
+#sheet{padding-top:clamp(16px,3vh,32px);padding-bottom:40px}
 .sheet{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(16px,2.6vw,36px)}
 @media (min-width:1000px){.sheet.two{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
 .block{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(16px,2vw,28px)}
@@ -127,14 +125,15 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
 @media (min-width:1000px){.after{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}}
 .kwform{display:flex;gap:6px;margin:6px 0}
 .kwform input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 12px}
-.mykw{font-size:1.15em;font-weight:700;color:var(--acc)}
 .act{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 14px;font-size:.9em}
 .act.main{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
 .votes{display:flex;gap:8px}
 .votes button{flex:1;border:2px solid var(--line);background:var(--card);border-radius:10px;padding:9px 6px;font-weight:700;font-variant-numeric:tabular-nums}
-.votes .good.on{border-color:var(--ok);color:var(--ok)}
-.votes .mid.on{border-color:var(--acc2);color:var(--acc2)}
-.votes .bad.on{border-color:var(--ng);color:var(--ng)}
+.votes .good{color:var(--ok)}.votes .mid{color:var(--gold)}.votes .bad{color:var(--ng)}
+.votes .good.on{border-color:var(--ok);background:var(--ok);color:var(--acc-ink)}
+.votes .mid.on{border-color:var(--gold);background:var(--gold);color:var(--acc-ink)}
+.votes .bad.on{border-color:var(--ng);background:var(--ng);color:var(--acc-ink)}
+.btns button:disabled{opacity:.4;cursor:not-allowed}
 .seg{display:flex;gap:8px;margin-top:10px}
 .seg button{flex:1;border:2px solid var(--line);background:var(--card);border-radius:10px;padding:8px 6px;font-size:.9em;font-weight:700}
 .seg button.on{border-color:var(--acc);color:var(--acc)}
@@ -193,14 +192,14 @@ ol.qs>li::before{content:counter(q) ".";color:var(--phase);font-weight:700}
         <button id="skip" class="main">바로 발표</button>
         <button id="again" hidden>다시</button>
         <button id="next" class="main" hidden>다음 구상지</button>
-        <button id="home2">목록</button>
+        <button id="home2">나가기</button>
       </div>
     </div>
     <div id="progress"><div id="fill"></div></div>
   </header>
   <div class="wide">
-    <div id="sheet"></div>
     <div id="after" hidden></div>
+    <div id="sheet"></div>
   </div>
 </div>
 
@@ -313,8 +312,7 @@ function renderSync() {
 /* ---- 목록 ---- */
 function tile(p) {
   const st = statOf(p.id), done = (mine(p.id).kw||[]).length;
-  const num = (v, c) => `<span class="n ${v?c:"z"}">${v}</span>`;
-  return `<button class="tile" data-id="${esc(p.id)}"><span class="nm"><b>구상지 ${esc(p.id)}</b><small>${esc(p.type||"")}</small>${done?'<span class="d">✓</span>':""}</span>${num(st.good,"g")}${num(st.mid,"m")}${num(st.bad,"b")}</button>`;
+  return `<button class="tile" data-id="${esc(p.id)}"><span class="nm"><b>구상지 ${esc(p.id)}</b><small>${esc(p.type||"")}</small>${done?'<span class="d">✓</span>':""}</span><span class="sc"><span class="g">좋음 ${st.good}</span><span class="m">보통 ${st.mid}</span><span class="b">별로 ${st.bad}</span></span></button>`;
 }
 function sorted(list) {
   const a = list.slice();
@@ -347,9 +345,9 @@ function render() {
     box.innerHTML = `<div class="panel"><h2>가장 많이 나온 키워드</h2><p class="sub">전체 구상지를 합친 순위입니다.</p>${rankHtml(overall(), [], 15)}</div><div class="panel"><h2>구상지별 키워드</h2>${rows}</div>`;
   } else {
     const list = sorted(all);
-    const chips = `<div class="chips" id="chips">${[["num","번호순"],["good","좋은 문제순"],["todo","안 푼 문제"]].map(c => `<button data-s="${c[0]}" class="${V.sort===c[0]?"on":""}">${c[1]}</button>`).join("")}</div>`;
-    const body = list.length ? `<div class="grid"><div class="thead"><span></span><span>좋음</span><span>보통</span><span>별로</span></div>${list.map(tile).join("")}</div>` : '<div class="empty">안 푼 구상지가 없습니다.</div>';
-    box.innerHTML = chips + body + '<button class="go-random" id="random">무작위로 시작</button>';
+    const chips = `<div class="chips" id="chips">${[["num","번호순"],["good","좋은 문제 순"],["todo","안 푼 문제"]].map(c => `<button data-s="${c[0]}" class="${V.sort===c[0]?"on":""}">${c[1]}</button>`).join("")}<button id="random" class="rand">랜덤시작</button></div>`;
+    const body = list.length ? `<div class="grid">${list.map(tile).join("")}</div>` : '<div class="empty">안 푼 구상지가 없습니다.</div>';
+    box.innerHTML = chips + body;
     const r = $("random"); if (r) r.onclick = () => start(pick());
   }
 }
@@ -386,18 +384,17 @@ function renderAfter() {
   if (el.hidden || !id) return;
   const was = $("kw-in"), focused = was && document.activeElement === was;
   if (was) S.draft = was.value;                 // 다시 그려도 쓰던 글자가 지워지지 않게 한다
-  const m = mine(id), st = statOf(id), has = (m.kw||[]).length > 0, done = S.phase === "done";
+  const m = mine(id), st = statOf(id), has = (m.kw||[]).length > 0;
   let kw;
   if (!has || S.editing) {
     kw = `<div class="block"><h3>이 문제에서 떠오르는 키워드 하나</h3>
       <form class="kwform" id="kw-form"><input id="kw-in" placeholder="키워드 입력" maxlength="${MAX_LEN}" autocomplete="off" value="${esc(S.draft)}"><button class="act main" type="submit">저장</button></form>
-      <p class="hint">저장하면 발표가 끝난 뒤 서로의 키워드를 볼 수 있습니다.</p></div>`;
-  } else if (!done) {
-    kw = `<div class="block"><div class="line"><h3>내 키워드</h3><button class="act" id="kw-edit">수정</button></div><div class="mykw">${esc(m.kw[0])}</div><p class="hint">발표가 끝나면 서로의 키워드가 공개됩니다.</p></div>`;
+      <p class="hint">저장하면 서로의 키워드를 볼 수 있습니다.</p></div>`;
   } else {
     kw = `<div class="block"><div class="line"><h3>모두의 키워드 (${st.n}명)</h3><button class="act" id="kw-edit">수정</button></div>${rankHtml(st.kw, m.kw)}${SYNC?`<div class="seg"><button id="pub-on" class="${m.pub?"on":""}">내 이름으로 공개</button><button id="pub-off" class="${m.pub?"":"on"}">비공개 유지</button></div><p class="hint">공개를 고르면 내 키워드 옆에 이름이 표시됩니다. 비공개여도 선생님은 시트에서 누가 쓴 답인지 볼 수 있습니다. <button class="link" id="kw-re">새로고침</button></p>`:""}</div>`;
   }
-  const votes = done ? `<div class="block"><h3>이 문제는 어땠나요?</h3><div class="votes">${[["good","좋음"],["mid","보통"],["bad","별로"]].map(v=>`<button class="${v[0]}${m.vote===v[0]?" on":""}" data-v="${v[0]}">${v[1]} ${st[v[0]]}</button>`).join("")}</div></div>` : "";
+  const votes = `<div class="block"><h3>이 문제는 어땠나요?</h3><div class="votes">${[["good","좋음"],["mid","보통"],["bad","별로"]].map(v=>`<button class="${v[0]}${m.vote===v[0]?" on":""}" data-v="${v[0]}">${v[1]} ${st[v[0]]}</button>`).join("")}</div>${has&&m.vote?"":'<p class="hint">키워드를 저장하고 문제를 평가하면 다음 구상지로 넘어갈 수 있습니다.</p>'}</div>`;
+  $("next").disabled = !(has && m.vote);
   el.innerHTML = `<div class="after">${kw}${votes}</div>`;
   const input = $("kw-in");
   if (input && focused) input.focus();
@@ -416,11 +413,12 @@ function renderAfter() {
   el.querySelectorAll(".votes button").forEach(b => b.onclick = () => vote(b.dataset.v));
 }
 function vote(v) {
-  const id = S.id, m = mine(id), now = m.vote === v ? "" : v;
+  const id = S.id, m = mine(id), now = v;
+  if (m.vote === v) return;
   if (SYNC) {                                  // 응답을 기다리지 않고 숫자를 먼저 바꾼다
     const st = D.stats[id] || (D.stats[id] = {good:0, mid:0, bad:0, n:0, kw:[]});
     if (m.vote) st[m.vote]--;
-    if (now) st[now]++;
+    st[now]++;
   }
   D.me[id] = Object.assign({kw:[], vote:""}, D.me[id], {vote:now});
   renderAfter();
@@ -486,10 +484,10 @@ function setPhase(p) {
   S.phase = p; S.paused = false;
   S.remain = p === "done" ? 0 : SECONDS*1000;
   S.endAt = Date.now() + S.remain;
-  if (p === "done") stop();
+  if (p === "done") { stop(); $("after").hidden = false; }
   paint();
   renderAfter();
-  if (p === "done") $("after").scrollIntoView({block:"start"});
+  if (p === "done") window.scrollTo(0, 0);
 }
 function tick() {
   if (S.paused) return;
@@ -508,7 +506,7 @@ function run(id, review) {
   $("sheet").innerHTML = sheetHtml(p);
   $("sheetname").textContent = "구상지 " + id;
   S.editing = false; S.draft = "";
-  $("after").innerHTML = ""; $("after").hidden = false;
+  $("after").innerHTML = ""; $("after").hidden = true;
   stop(); show("run");
   if (review) { setPhase("done"); return; }
   setPhase("think");
@@ -546,7 +544,7 @@ function togglePause() {
 /* ---- 이벤트 ---- */
 $("tabs").onclick = e => { const b = e.target.closest("button"); if (b) { V.view = b.dataset.v; render(); } };
 $("box").onclick = e => {
-  const c = e.target.closest("#chips button"); if (c) { V.sort = c.dataset.s; render(); return; }
+  const c = e.target.closest("#chips button[data-s]"); if (c) { V.sort = c.dataset.s; render(); return; }
   const b = e.target.closest("[data-id]"); if (b) start(b.dataset.id, !!b.dataset.review);
 };
 $("gatestart").onclick = () => start(S.id);
