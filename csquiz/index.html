@@ -248,7 +248,7 @@ function finishExam(){if(!CUR)return;const ok=CUR.ids.filter(x=>CUR.res[x]==="ok
   M["D:"+CUR.ts+":"+CUR.ids.join(",")]={ok:ok,ng:CUR.ids.length-ok,u:Date.now()};save();queueSync();CUR=null;saveCur();LASTSCORE=ok*10;render();}
 let LASTSCORE=null;
 function drawSummary(){const d=draws();if(!d.length)return "아직 끝낸 회차가 없습니다.";const ok=d.reduce((a,x)=>a+x.ok,0),tot=d.reduce((a,x)=>a+x.ok+x.ng,0);return `${d.length}회 · 평균 ${Math.round(100*ok/tot)}점 (${ok}/${tot})`}
-let cur="subj",pick=[],wsort="count",fsort="all",RF="전체";const FILT={};
+let cur="subj",pick=[],wsort="count",fsort="subj",RF="전체";const FILT={};
 const CHIPS=[{k:"전체",l:"전체<br>문항"},{k:"기본",l:"기본<br>랜덤"},{k:"쉽게",l:"쉬운<br>랜덤"},{k:"어렵게",l:"어려운<br>랜덤"}];
 const ORDER={};
 function inChip(q,c){return c==="전체"||(c==="기본"?q.f==="Ⅰ":q.d===c)}
@@ -269,7 +269,7 @@ function rate(c){return c.ok+c.ng?c.ng/(c.ok+c.ng):0}
 function wcmp(a,b){const x=cnt(a.id),y=cnt(b.id);return wsort==="count"?(y.ng-x.ng)||(rate(y)-rate(x)):(rate(y)-rate(x))||(y.ng-x.ng)}
 function mix(a){return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1])}
 function acc(q){const c=cnt(q.id),t=c.ok+c.ng;return t?c.ok/t:null}
-function starList(){const w=Q.filter(q=>starred(q.id));if(fsort!=="low")return w;
+function starList(){const w=Q.filter(q=>starred(q.id));if(fsort==="random")return mix(w);if(fsort!=="low")return w;
   return w.sort((a,b)=>{const x=acc(a),y=acc(b);if(x===null||y===null)return (x===null)-(y===null);return x-y})}   // 안 푼 문제는 맨 뒤
 function wrongList(){const w=Q.filter(q=>cnt(q.id).ng>0).sort(wcmp);if(wsort!=="random")return w;   // 정답률 낮은 순으로 20문제씩 구간을 나누고 구간 안에서만 섞음
   let out=[];for(let i=0;i<w.length;i+=20)out=out.concat(mix(w.slice(i,i+20)));return out}
@@ -292,7 +292,7 @@ function render(){stat();document.getElementById("fclose").hidden=true;const box
     if(!inExam){box.innerHTML=board+chips+`<div class="tools"><button class="draw" onclick="startExam()">무작위로 10문제 뽑고 시험보기</button></div>`;}
     else{LASTSCORE=null;box.innerHTML=board.replace(/<div class="last">.*?<\/div>/,"")+chips+`<div class="tools"><button class="quit" onclick="quitExam()">여기까지 저장하고 시험 포기하기</button></div><div class="cov" id="exam-prog">${examProg()}</div><details class="theme plain" open><summary></summary>${pick.map((q,i)=>card(q,i,true)).join("")}</details><div class="tools"><button class="draw" onclick="finishExam()">기록 저장하고 시험 끝내기</button></div>`;}}
   else if(cur==="star"){const w=starList();
-    const bar=`<div class="tools">${[["all","모두 보기"],["low","낮은 정답률"],["subj","영역별"]].map(([k,l])=>`<button class="${fsort===k?"on":""}" onclick="fsort='${k}';render()">${l}</button>`).join("")}</div>`;
+    const bar=`<div class="tools">${[["subj","영역순"],["low","낮은 정답률"],["random","랜덤풀이"]].map(([k,l])=>`<button class="${fsort===k?"on":""}" onclick="fsort='${k}';render()">${l}</button>`).join("")}</div>`;
     if(w.length&&fsort==="subj"){const subs=[...new Set(Q.map(q=>q.s))];box.innerHTML=bar+subs.map((sj,i)=>subjBox(sj,i,favN(sj),`<div class="list"></div>`)).join("");box.querySelectorAll("details.theme").forEach(d=>d.addEventListener("toggle",onToggle));return}
     box.innerHTML=bar+(w.length?`<details class="theme plain" open><summary></summary>${w.map((q,i)=>card(q,i,true)).join("")}</details>`:`<div class="theme"><div class="empty">별표를 누른 문제가 아직 없어요.<br>문제 아래 별표를 누르면 여기에 모입니다.</div></div>`);}
   else{const w=wrongList();
